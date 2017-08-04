@@ -63,8 +63,8 @@ def makeMatrix(args):
     matrix to file
     """
 
-    if len(args) == 4:
-        rootDir,filePattern,rqualOutFile,oqualOutFile = args
+    if len(args) == 3:
+        fileoffiles,rqualOutFile,oqualOutFile = args
     else:
         usage()
         sys.exit(1)
@@ -74,7 +74,14 @@ def makeMatrix(args):
     allSamps = []
 
     ## find all cutadapt stats files using pattern 
-    files = findFiles(rootDir,filePattern)
+    files = []
+    fh = open(fileoffiles,"r")
+    while(1):
+        line = fh.readline()
+        if not line:
+            break
+        files.append(line.strip())
+
 
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"

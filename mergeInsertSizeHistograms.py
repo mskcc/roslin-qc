@@ -22,20 +22,6 @@ def usage():
 
 
 ## create a list of full paths to files that match pattern entered
-def findFiles(rootDir,pattern):
-    """
-    create and return a list of full paths to files that match pattern entered
-    """
-    filepaths = []
-    for path, dirs, files in os.walk(os.path.abspath(rootDir)):
-        if fnmatch.filter(files, pattern):
-            for file in fnmatch.filter(files, pattern):
-                filepaths.append(os.path.join(path,file))
-        else:
-            if "Proj" in path.split("/")[-1] and "-" in path.split("/")[-1]:
-                print>>sys.stderr, "WARNING: No files matching pattern %s found in %s" %(pattern, path)
-
-    return filepaths
 
 def printMatrix(matrix,allSamps,outFile):
     """
@@ -58,8 +44,8 @@ def makeMatrix(args):
     matrix to file
     """
 
-    if len(args) == 3:
-        rootDir,filePattern,outFile = args
+    if len(args) == 2:
+        fileoffiles,outFile = args
     else:
         usage()
         sys.exit(1)
@@ -68,9 +54,16 @@ def makeMatrix(args):
     matrix = OrderedDict()
     allSamps = []
 
-    filePattern = '*'+filePattern
     ## find all cutadapt stats files using pattern 
-    files = findFiles(rootDir,filePattern)
+    #files = findFiles(rootDir,filePattern)
+    files = []
+    fh = open(fileoffiles,"r")
+    while(1):
+        line = fh.readline()
+        if not line:
+            break
+        files.append(line.strip())
+
 
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"

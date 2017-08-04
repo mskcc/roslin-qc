@@ -333,12 +333,11 @@ def findFiles(rootDir,pattern):
 def get_args(sysargs):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-pattern',required=True,help='pattern to use to find DepthOfCoverage output files')
+    parser.add_argument('-fof', required=True, help="file of files")
     parser.add_argument('-pre',required=True,help='project prefix')
     parser.add_argument('-fp',required=True,help='fingerprint genotypes file')
     parser.add_argument('-group',required=True,help='sample grouping file')
     parser.add_argument('-pair',required=True,help='sample pairing file')
-    parser.add_argument('-dir',help='directory to search; cwd by default')
     parser.add_argument('-outdir',help='output directory')
 
     args = parser.parse_args()
@@ -348,11 +347,13 @@ def get_args(sysargs):
 
 if __name__ == '__main__':
     args = get_args(sys.argv)
-    if not args.dir:
-        dir=os.getcwd()
-    else:
-        dir=args.dir
-    docFiles = findFiles(dir,args.pattern)
+    fh = open(args.fof, "rb")
+    docFiles = []
+    while(1):
+        line = fh.readline()
+        if not line:
+             break
+        docFiles.append(line.strip())
     groups = makeGroups(args.group)
     pairs = makePairs(args.pair)
     getContamination(docFiles,args.fp,args.pre,groups,pairs,args.outdir)
