@@ -21,7 +21,7 @@ if(!$pre || !$path  || !$request || !$log || !$version){
     die "MUST PROVIDE PRE, PATH, CONFIG, REQUEST FILE, SVN REVISION NUMBER AND OUTPUT\n";
 }
 
-my $R = '/opt/common/CentOS_6-dev/bin/current/';
+my $R = '/usr/bin/';
 my $JAVA = '/usr/bin/';
 ## generate a PDF file for each plot, a project summary text file and a sample summary text file
 print "$R/R CMD BATCH \"--args path='$path' pre='$pre' bin='$Bin' logfile='$log'\" $Bin/qc_summary.R\n";
