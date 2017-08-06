@@ -103,12 +103,12 @@ def makeMatrix(args):
                     fl.readline()
                     for line in fl:
                         if len(line.strip())>0:
-                            cycle,rqual = line.strip().split("\t")
+                            cycle,rqual,oqual = line.strip().split("\t")
                             if not cycle in matrix:
                                 matrix[cycle] = {'rqual':{},'oqual':{}}
                             if not samp in matrix[cycle]['rqual'] and not samp in matrix[cycle]['oqual']:
                                 matrix[cycle]['rqual'][samp] = rqual
-                                matrix[cycle]['oqual'][samp] = rqual                         
+                                matrix[cycle]['oqual'][samp] = oqual                         
 
         printMatrix(matrix,allSamps,rqualOutFile,oqualOutFile)            
 
