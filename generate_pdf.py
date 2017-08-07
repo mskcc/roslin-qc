@@ -26,7 +26,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     datapath = os.path.dirname(os.path.realpath(args.request_file))
     print >>sys.stderr, "Generating merged picard metrics (GC Bias, Mark Dups, Hs Metrics)..."
-    filenames = [ args.file_prefix + "_GcBiasMetrics.txt", args.file_prefix + "_markDuplicateMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
+    filenames = [ args.file_prefix + "_GcBiasMetrics.txt", args.file_prefix + "_markDuplicatesMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
     for i, files in enumerate([args.gcbias_files, args.mdmetrics_files, args.hsmetrics_files]):
         fof = open("temp_fof", "wb")
         for file in files:

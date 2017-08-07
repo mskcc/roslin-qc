@@ -121,7 +121,7 @@ get.md.metrics <- function(path,type){
     dat <- read.delim(file,check.names=FALSE)
     # This normalizes the sample names and removes the last __1
     # which is the library number
-#    dat$LIBRARY = sub("__1$", "", dat$LIBRARY)
+    dat$LIBRARY = sub("_1$", "", dat$LIBRARY)
     return(dat)
 }
 
