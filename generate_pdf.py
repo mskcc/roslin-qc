@@ -28,20 +28,12 @@ if __name__ == "__main__":
     print >>sys.stderr, "Generating merged picard metrics (GC Bias, Mark Dups, Hs Metrics)..."
     filenames = [ args.file_prefix + "_GcBiasMetrics.txt", args.file_prefix + "_markDuplicatesMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
     for i, files in enumerate([args.gcbias_files, args.mdmetrics_files, args.hsmetrics_files]):
-        fof = open("temp_fof", "wb")
-        for file in files:
-                fof.write(file +"\n")
-        fof.close()
-        cmd = ["perl", os.path.join(path, "mergePicardMetrics.pl"), "-files", "temp_fof", ">", filenames[i]]
+        cmd = ["perl", os.path.join(path, "mergePicardMetrics.pl"), "-files", files, ">", filenames[i]]
         print >>sys.stderr, " ".join(cmd)
         subprocess.call(" ".join(cmd), shell=True)
     print >>sys.stderr, "Generated GcBias, MarkDuplicate, and HsMetrics inputs without error"
     print >>sys.stderr, "Generating Insert Size Histogram..."
-    fof = open("temp_fof", "wb")
-    for file in args.insertsize_files:
-        fof.write(file+"\n")
-    fof.close()
-    cmd = ['python', os.path.join(path,'mergeInsertSizeHistograms.py'), "temp_fof", args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
+    cmd = ['python', os.path.join(path,'mergeInsertSizeHistograms.py'), args.insertsize_files, args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
     print >>sys.stderr, " ".join(cmd)
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
@@ -49,12 +41,8 @@ if __name__ == "__main__":
         sys.exit(1)
     print >>sys.stderr, "Insert Size Histogram Generated!"
     print >>sys.stderr, "Generating Fingerprint from DOC inputs..."
-    fof = open("temp_fof", "wb")
-    for file in args.fingerprint_files:
-        fof.write(file+"\n")
-    fof.close()
     cmd = ['python', os.path.join(path, 'analyzeFingerprint.py'), '-pre', args.file_prefix, '-fp', args.fp_genotypes, 
-            '-group', args.grouping_file, '-outdir', '.', '-pair', args.pairing_file, "-fof", "temp_fof"]
+            '-group', args.grouping_file, '-outdir', '.', '-pair', args.pairing_file, "-fof", args.fingerprint_files]
     print >>sys.stderr, " ".join(cmd)
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
@@ -62,11 +50,7 @@ if __name__ == "__main__":
         sys.exit(1)
     print >>sys.stderr, "Fingerprint File Generated!"
     print >>sys.stderr, "Generating Qual Files..."
-    fof = open("temp_fof", "wb")
-    for file in args.qualmetrics_files:
-        fof.write(file+"\n")
-    fof.close()
-    cmd = ['python', os.path.join(path, 'mergeMeanQualityHistograms.py'), "temp_fof", args.file_prefix + "_post_recal_MeanQualityByCycle.txt", args.file_prefix + "_pre_recal_MeanQualityByCycle.txt"]
+    cmd = ['python', os.path.join(path, 'mergeMeanQualityHistograms.py'), args.qualmetrics_files, args.file_prefix + "_post_recal_MeanQualityByCycle.txt", args.file_prefix + "_pre_recal_MeanQualityByCycle.txt"]
     print >>sys.stderr, " ".join(cmd)
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
@@ -74,11 +58,7 @@ if __name__ == "__main__":
         sys.exit(1)
     print >>sys.stderr, "Qual Files Generated!"
     print >>sys.stderr, "Generating CutAdapt Summary.."
-    fof = open("temp_fof", "wb")
-    for file in args.trimgalore_files:
-        fof.write(file+"\n")
-    fof.close()
-    cmd = ['python', os.path.join(path,'mergeCutAdaptStats.py'), 'temp_fof', args.file_prefix + "_CutAdaptStats.txt"]
+    cmd = ['python', os.path.join(path,'mergeCutAdaptStats.py'), args.trimgalore_files, args.file_prefix + "_CutAdaptStats.txt"]
     print >>sys.stderr, cmd
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
