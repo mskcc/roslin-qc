@@ -65,11 +65,19 @@ def makeMatrix(args):
     matrix to file
     """
 
-    if len(args) == 2:
-        fileoffiles,outFile = args
+    if len(args) == 3:
+        #lazily take pairfile instead of mapping, bc we already have it in cwl
+        fileoffiles,outFile,pairfile = args
     else:
         usage()
         sys.exit(1)
+    fh = open(pairfile)
+    samples = []
+    while(1):
+        line = fh.readline()
+        if not line:
+            break
+        samples= samples + line.strip().split("\t")
 
     ## store all values in an ordered dict, keyed by sample
     matrix = OrderedDict()
@@ -91,8 +99,9 @@ def makeMatrix(args):
             if os.stat(file)[6]==0: ## file is empty
                 print>>sys.stderr, "WARNING: This file is empty!"
             else:
-                samp = os.path.basename(file).split("_")[0]
-                print samp
+                for sample in samples:
+                    if file.find(sample) > -1:
+                        samp = sample
                 fName = file.split("/")[-1]
                 rmatch = re.search("_(R[12])_", fName)
                 if not rmatch:
