@@ -101,7 +101,7 @@ if __name__ == "__main__":
         print name
         temp_fh.write(name + "\n")
     temp_fh.close()
-    cmd = ['python', os.path.join(path,'mergeCutAdaptStats.py'), 'temp_fof', args.file_prefix + "_CutAdaptStats.txt"]
+    cmd = ['python', os.path.join(path,'mergeCutAdaptStats.py'), 'temp_fof', args.file_prefix + "_CutAdaptStats.txt", args.pairing_file]
     print >>sys.stderr, cmd
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
