@@ -72,7 +72,7 @@ def makeMatrix(args):
             else:
                 fname = file.split("/")[-1].replace(".txt","")
                 pat_idx = fname.index(filePattern.replace("*",""))
-                samp = fname[pat_idx+len(filePattern.replace("*",""))+1:] ### WARNING: this is dumb as it assumes a certain pattern and should only be used with current naming convention of GCbias metrics files!
+                (samp, _) = fname.split(".", 1) ### WARNING: this is dumb as it assumes a certain pattern and should only be used with current naming convention of GCbias metrics files!
                 if samp in allSamps:
                     print "ERROR: sample %s found multiple times!!" %samp
                     continue
