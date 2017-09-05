@@ -51,7 +51,16 @@ if __name__ == "__main__":
         cmd = ["perl", os.path.join(path, "mergePicardMetrics.pl"), "-files", "temp_fof", ">", outfilenames[i]]
         print >>sys.stderr, " ".join(cmd)
         subprocess.call(" ".join(cmd), shell=True)
-    print >>sys.stderr, "Generated GcBias, MarkDuplicate, and HsMetrics inputs without error"
+    print >>sys.stderr, "Generated MarkDuplicate, and HsMetrics inputs without error"
+    filenames= find_files(path_to_search, pattern=args.gcbias_files)
+    temp_fh = open("temp_fof", "wb")
+    filenames = find_files(path_to_search, pattern=args.insertsize_files)
+    for name in filenames:
+        print name
+        temp_fh.write(name + "\n")
+    temp_fh.close()
+    cmd = ['python', os.path.join(path,'mergeGcBiasMetrics.py'), 'temp_fof', args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
+    print >>sys.stderr, " ".join(cmd)
     print >>sys.stderr, "Generating Insert Size Histogram..."
     temp_fh = open("temp_fof", "wb")
     filenames = find_files(path_to_search, pattern=args.insertsize_files)
@@ -59,7 +68,6 @@ if __name__ == "__main__":
         print name
         temp_fh.write(name + "\n")
     temp_fh.close()
-
     cmd = ['python', os.path.join(path,'mergeInsertSizeHistograms.py'), 'temp_fof', args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
     print >>sys.stderr, " ".join(cmd)
     rv = subprocess.call(cmd, shell=False)

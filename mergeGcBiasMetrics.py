@@ -49,8 +49,8 @@ def makeMatrix(args):
     matrix to file
     """
 
-    if len(args) == 3:
-        rootDir,filePattern,outFile = args
+    if len(args) == 2:
+        fof,outFile = args
     else:
         usage()
         sys.exit(1)
@@ -59,10 +59,10 @@ def makeMatrix(args):
     matrix = OrderedDict()
     allSamps = []
 
-    filePattern = '*'+filePattern
+    #filePattern = '*'+filePattern
     ## find all gc metrics files using pattern 
-    files = findFiles(rootDir,filePattern)
-
+    files = open(fof,"r").readlines()
+    files = [x.strip() for x in files]
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"
         for file in files:
@@ -71,7 +71,7 @@ def makeMatrix(args):
                 print>>sys.stderr, "WARNING: This file is empty!"
             else:
                 fname = file.split("/")[-1].replace(".txt","")
-                pat_idx = fname.index(filePattern.replace("*",""))
+#                pat_idx = fname.index(filePattern.replace("*",""))
                 (samp, _) = fname.split(".", 1) ### WARNING: this is dumb as it assumes a certain pattern and should only be used with current naming convention of GCbias metrics files!
                 if samp in allSamps:
                     print "ERROR: sample %s found multiple times!!" %samp
