@@ -39,7 +39,7 @@ if __name__ == "__main__":
     path_to_search = "/".join(args.globdir.split("/")[:-1])
     print "Search path: %s" % path_to_search
     datapath = os.path.dirname(os.path.realpath(args.request_file))
-    print >>sys.stderr, "Generating merged picard metrics (GC Bias, Mark Dups, Hs Metrics)..."
+    print >>sys.stderr, "Generating merged picard metrics (Mark Dups, Hs Metrics)..."
     outfilenames = [ args.file_prefix + "_GcBiasMetrics.txt", args.file_prefix + "_markDuplicatesMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
     for i, files in enumerate([args.gcbias_files, args.mdmetrics_files, args.hsmetrics_files]):
         temp_fh = open("temp_fof", "wb")
@@ -52,9 +52,9 @@ if __name__ == "__main__":
         print >>sys.stderr, " ".join(cmd)
         subprocess.call(" ".join(cmd), shell=True)
     print >>sys.stderr, "Generated MarkDuplicate, and HsMetrics inputs without error"
+    print >>sys.stderr, "Generating GCBias summary inputs..."
     filenames= find_files(path_to_search, pattern=args.gcbias_files)
     temp_fh = open("temp_fof", "wb")
-    filenames = find_files(path_to_search, pattern=args.insertsize_files)
     for name in filenames:
         print name
         temp_fh.write(name + "\n")
