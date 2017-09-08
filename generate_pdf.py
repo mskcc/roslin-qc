@@ -40,8 +40,8 @@ if __name__ == "__main__":
     print "Search path: %s" % path_to_search
     datapath = os.path.dirname(os.path.realpath(args.request_file))
     print >>sys.stderr, "Generating merged picard metrics (Mark Dups, Hs Metrics)..."
-    outfilenames = [ args.file_prefix + "_GcBiasMetrics.txt", args.file_prefix + "_markDuplicatesMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
-    for i, files in enumerate([args.gcbias_files, args.mdmetrics_files, args.hsmetrics_files]):
+    outfilenames = [ args.file_prefix + "_markDuplicatesMetrics.txt", args.file_prefix + "_HsMetrics.txt"]
+    for i, files in enumerate([args.mdmetrics_files, args.hsmetrics_files]):
         temp_fh = open("temp_fof", "wb")
         filenames = find_files(path_to_search, pattern=files)
         for name in filenames:
@@ -53,13 +53,15 @@ if __name__ == "__main__":
         subprocess.call(" ".join(cmd), shell=True)
     print >>sys.stderr, "Generated MarkDuplicate, and HsMetrics inputs without error"
     print >>sys.stderr, "Generating GCBias summary inputs..."
+    os.unlink("temp_fof")
     filenames= find_files(path_to_search, pattern=args.gcbias_files)
     temp_fh = open("temp_fof", "wb")
     for name in filenames:
         print name
         temp_fh.write(name + "\n")
     temp_fh.close()
-    cmd = ['python', os.path.join(path,'mergeGcBiasMetrics.py'), 'temp_fof', args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
+    cmd = ['python', os.path.join(path,'mergeGcBiasMetrics.py'), 'temp_fof', args.file_prefix + "_GcBiasMetrics.txt" ]
+    rv = subprocess.call(cmd, shell=False)
     print >>sys.stderr, " ".join(cmd)
     print >>sys.stderr, "Generating Insert Size Histogram..."
     temp_fh = open("temp_fof", "wb")
