@@ -57,7 +57,7 @@ plot.cdna.contamination <- function(cdna.contamination){
              col=c("white","red"),
              cl.pos="n",
              title="cDNA Contamination",
-             pch.col="black", 
+             pch.col="black",
              tl.col="black",
              tl.srt=90,
              tl.cex=0.9,
@@ -267,13 +267,23 @@ plot.alignment.percentage <- function(alignment,sort.by='name'){
     density.m2 <- ddply(density.m, .(Samples), mutate, perc = value/sum(value))
 
     y <- min(density.m2[density.m2$variable == "BothAlign", ]["perc"])
-    y <- y*0.90
+
+    # Quanitize y min to quarters of each decade (0,.25,.5,.75)
+    y <- floor(40*y)/40
 
     if(sort.by == 'badToGood'){
         density.m2$Samples <- factor(density.m2$Samples, levels=density.m$Samples[both.order])
     } else if(sort.by == 'name'){
         density.m2$Samples <- factor(density.m2$Samples, levels=density.m2$Samples[order(density.m2$Samples)])
     }
+
+    # Need to order factors correctly since we are clipping the bar charge.
+    # Smallest to largest
+
+    density.m2$variable=factor(
+                                density.m2$variable,
+                                levels=c("NeitherAlign","OneAlign","BothAlign")
+                              )
 
     ggplot(density.m2, aes(x = Samples, y = perc, fill = variable)) +
         geom_bar(stat="identity", position="fill", width=0.7, color="black")+
@@ -282,7 +292,12 @@ plot.alignment.percentage <- function(alignment,sort.by='name'){
           legend.position="bottom",
           legend.title = element_blank()
         ) +
-        scale_fill_manual(name="Type",values = c3, labels = c("Both Reads Aligned", "One Read Aligned", "Neither Read Aligned")) +
+        scale_fill_manual(
+            name="Type",
+            values = rev(c3),
+            labels = rev(c("Both Reads Aligned",
+                            "One Read Aligned",
+                            "Neither Read Aligned"))) +
         labs(title="Cluster Density & Alignment Rate") +
         xlab("") +
         ylab("") +
@@ -300,7 +315,7 @@ plot.insert.size.distribution <- function(is.metrics){
 
     legend.position = "right"
     if(length(insert_label)>=20){ legend.position = "none" }
- 
+
     ggplot(insert.m,
       aes(x = insert_size, y = value, color = variable)) +
       geom_line(size=0.75) +
