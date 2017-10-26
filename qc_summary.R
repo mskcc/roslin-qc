@@ -46,6 +46,7 @@ print.image <- function(dat,metricType,sortOrder,plot.function,square=FALSE){
 }
 
 cat(paste(date(),"\n"),file=logfile, append=TRUE)
+cat(paste(args,"\n"),file=logfile, append=TRUE)
 no.fails = TRUE
 
 dir.create(paste(path,"/images",sep=""),showWarnings=FALSE)
@@ -105,7 +106,10 @@ print.image(gc,"gc_bias","16",plot.gc.bias) #,square=TRUE)
 
 ## write sample level summary table
 tryCatch({
-    detail = as.matrix(get.detail.table(path,type,id))
+    #args come from command line ##charris
+    #FIXME
+    #TERRIBLE!
+    detail = as.matrix(get.detail.table(path,type,id,dup_rate_threshold,cov_warn_threshold,cov_fail_threshold,minor_contam_threshold,major_contam_threshold))
     colnames(detail)[1] = "Auto-status"
     detail[which(detail[,1]=='0FAIL'),1] = 'FAIL'
     detail[which(detail[,1]=='1WARN'),1] = 'WARN'
