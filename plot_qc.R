@@ -22,7 +22,7 @@ c48 <- c("#1d915c","#5395b4",
                 "#f5ee31","#a99fce","#54525e","#b0accc",
                 "#5e5b73","#efcd9f", "#68705d", "#f8f391", "#faf7b6", "#c4be5d", "#764c29", "#c7ac74", "#8fa7aa", "#c8e7dd", "#766a4d", "#e3a291", "#5d777a", "#299c39", "#4055a5", "#b96bac", "#d97646", "#cebb2d", "#bf1e2e", "#d89028", "#85c440", "#36c1ce", "#574a9e")
 
-plot.fpc.sum <- function(fpc.sum){
+plot.fpc.sum <- function(fpc.sum, extras){
     if(is.null(fpc.sum)){ return(NULL) }
     heatmap.2(fpc.sum,
               Rowv="NA",
@@ -65,7 +65,7 @@ plot.cdna.contamination <- function(cdna.contamination){
              is.corr=FALSE)
 }
 
-plot.major.contamination <- function(dat,sort.by='name'){
+plot.major.contamination <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     colnames(dat) = c("Sample","PerHeterozygousPos") ## colnames are different between exome and dmp pipelines
     if(sort.by == 'badToGood'){
@@ -84,11 +84,11 @@ plot.major.contamination <- function(dat,sort.by='name'){
         xlab("") +
         ylab("Fraction of position that are hetrozygous") +
         labs(title="Major Contamination Check") +
-        geom_hline(aes(yintercept=0.55), color = "red", size=0.75) #+
+        geom_hline(aes(yintercept=as.numeric(extras$major_contam_fail)), color = "red", size=0.75) #+
         #coord_flip()
 }
 
-plot.minor.contamination <- function(dat,sort.by='name'){
+plot.minor.contamination <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     if(sort.by == 'badToGood'){
         dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(dat$AvgMinorHomFreq)])
@@ -108,13 +108,13 @@ plot.minor.contamination <- function(dat,sort.by='name'){
       xlab("") +
       ylab("Avg. Minor Allele Frequency at Homozygous Position") +
       labs(title="Minor Contamination Check") +
-      geom_hline(aes(yintercept=0.02), color = "red", size=0.5) +
-      geom_hline(aes(yintercept=0.01), color = "yellow", size=0.5) +
+      geom_hline(aes(yintercept=extras$minor_contam_fail), color = "red", size=0.5) +
+      geom_hline(aes(yintercept=extras$minor_contam_warn), color = "yellow", size=0.5) +
       scale_color_hue(name="Samples") #+
       #coord_flip()
 }
 
-plot.coverage <- function(dat,sort.by='name'){
+plot.coverage <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     if(sort.by == "badToGood"){
         dat$Samples = factor(dat$Samples, levels=dat$Samples[order(-dat$Cov)])
@@ -131,12 +131,12 @@ plot.coverage <- function(dat,sort.by='name'){
        labs(title="Mean Target Coverage") +
        xlab("") +
        ylab("Mean Coverage") +
-       geom_hline(aes(yintercept=200),color="yellow", size=0.75) +
-       geom_hline(aes(yintercept=50), color="red", size=0.75) #+
+       geom_hline(aes(yintercept=extras$cov_warn),color="yellow", size=0.75) +
+       geom_hline(aes(yintercept=extras$cov_fail), color="red", size=0.75) #+
        #coord_flip()
 }
 
-plot.duplication <- function(duplication,sort.by='name'){
+plot.duplication <- function(duplication,extras,sort.by='name'){
     if(is.null(duplication)){ return(NULL) }
     if(sort.by == 'badToGood'){
         duplication$Samples <- factor(duplication$Samples, levels=duplication$Samples[order(duplication$DupRate)])
@@ -154,11 +154,11 @@ plot.duplication <- function(duplication,sort.by='name'){
         xlab("") +
         ylab("Duplication Rate") +
         scale_y_continuous(labels=percent) +
-        geom_hline(aes(yintercept=0.5),color="yellow", size=1.0) #+
+        geom_hline(aes(yintercept=extras$dup_warn),color="yellow", size=1.0) #+
         #coord_flip()
 }
 
-plot.library.size <- function(librarySize,sort.by='name'){
+plot.library.size <- function(librarySize,extras,sort.by='name'){
     if(is.null(librarySize)) { return(NULL) }
     if(sort.by == 'badToGood'){
         librarySize$Samples <- factor(librarySize$Samples, levels=librarySize$Samples[order(-librarySize$Comp)])
@@ -178,7 +178,7 @@ plot.library.size <- function(librarySize,sort.by='name'){
         #coord_flip()
 }
 
-plot.capture.specificity <- function(captureSpecificity,sort.by='name'){
+plot.capture.specificity <- function(captureSpecificity,extras,sort.by='name'){
     if(is.null(captureSpecificity)){ return(NULL) }
     cs.m = melt(captureSpecificity, id.vars="Sample")
 
@@ -202,7 +202,7 @@ plot.capture.specificity <- function(captureSpecificity,sort.by='name'){
        #coord_flip()
 }
 
-plot.capture.specificity.percentage <- function(captureSpecificity,sort.by='name'){
+plot.capture.specificity.percentage <- function(captureSpecificity,extras,sort.by='name'){
     if(is.null(captureSpecificity)){ return(NULL) }
     cs = captureSpecificity
     x=cs[,c("OnBait","NearBait","OffBait")]
@@ -231,7 +231,7 @@ plot.capture.specificity.percentage <- function(captureSpecificity,sort.by='name
         #coord_flip()
 }
 
-plot.alignment <- function(alignment,sort.by='name'){
+plot.alignment <- function(alignment,extras,sort.by='name'){
     if(is.null(alignment)){ return(NULL) }
     density.m = melt(alignment)
     density.m$value <- density.m$value/1000000
@@ -256,7 +256,7 @@ plot.alignment <- function(alignment,sort.by='name'){
         #coord_flip()
 }
 
-plot.alignment.percentage <- function(alignment,sort.by='name'){
+plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
     density = alignment
     if(is.null(density)){ return(NULL) }
     x=density[,c("BothAlign","OneAlign","NeitherAlign")]
@@ -305,7 +305,7 @@ plot.alignment.percentage <- function(alignment,sort.by='name'){
         #coord_flip()
 }
 
-plot.insert.size.distribution <- function(is.metrics){
+plot.insert.size.distribution <- function(is.metrics, extras){
     if(is.null(is.metrics)){ return(NULL) }
     is.metrics = as.data.frame(is.metrics)
     insert_label <- colnames(is.metrics)[2:ncol(is.metrics)]
@@ -330,7 +330,7 @@ plot.insert.size.distribution <- function(is.metrics){
       #guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(is.metrics)/20)))
 }
 
-plot.insert.peaks <- function(is.metrics){
+plot.insert.peaks <- function(is.metrics, extras){
     if(is.null(is.metrics)){ return(NULL) }
     peaks <- as.data.frame(t(apply(as.matrix(is.metrics[,2:ncol(is.metrics)]),2,which.max)))
     peaks_label <- colnames(peaks)
@@ -347,7 +347,7 @@ plot.insert.peaks <- function(is.metrics){
         #coord_flip()
 }
 
-plot.trimmed.reads <- function(reads,sort.by='name'){
+plot.trimmed.reads <- function(reads,extras,sort.by='name'){
     reads.m <- melt(reads)
     reads.m$value <- reads.m$value/100
 
@@ -372,7 +372,7 @@ plot.trimmed.reads <- function(reads,sort.by='name'){
       #coord_flip()
 }
 
-plot.base.qualities <- function(base.qualities){
+plot.base.qualities <- function(base.qualities, extras){
     ggplot(base.qualities, aes(x = cycle, y = value, color = variable)) +
         geom_line(size=0.5) +
         theme(legend.position="none") + #"right",
@@ -402,7 +402,7 @@ plot.pool.norm.genotype <- function(pool.norm.genotype){
 }
 
 
-plot.gc.bias <- function(gc.bias){
+plot.gc.bias <- function(gc.bias, extras){
     if(is.null(gc.bias)){ return(NULL) }
     xt.m <- melt(gc.bias, id.vars="X")
 
