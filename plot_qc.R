@@ -404,12 +404,22 @@ plot.pool.norm.genotype <- function(pool.norm.genotype){
 
 plot.gc.bias <- function(gc.bias, extras){
     if(is.null(gc.bias)){ return(NULL) }
+
+    # Transform the X axis to fraction to conform to DMP version
+    # also limit to GC% between 30% and 80% and get the max value
+    # over this inverval to scale the y-axis
+
+    gc.bias[,1]=gc.bias[,1]/100
+
+    yMax=ceiling(max(gc.bias[31:81,2:ncol(gc.bias)]))
+
     xt.m <- melt(gc.bias, id.vars="X")
 
     legend.position = "right"
     if(ncol(gc.bias)>=20){ legend.position = "none" }
 
     ggplot(xt.m, aes(x = X, y = value, color = variable)) +
+       coord_cartesian(xlim = c(.3, .8), ylim=c(0,yMax)) +
        geom_line(size=0.5) +
        theme(legend.position=legend.position) + #"right",
               #legend.title=element_blank(),
