@@ -22,19 +22,24 @@ if __name__ == "__main__":
     path = os.path.dirname(os.path.realpath(__file__))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gcbias-files", required=True)
+    parser.add_argument("--gcbias-files", default="*.gcbiasmetrics")
+    parser.add_argument("--mdmetrics-files", default="*.md_metrics")
+    parser.add_argument("--insertsize-files", default="*.ismetrics")
+    parser.add_argument("--hsmetrics-files", default="*.hsmetrics")
+    parser.add_argument("--qualmetrics-files", default="*.quality_by_cycle_metrics")
+    parser.add_argument("--fingerprint-files", default="*_FP_base_counts.txt")
+    parser.add_argument("--trimgalore-files", default="*_cl.stats")
     parser.add_argument("--globdir", required=True)
-    parser.add_argument("--mdmetrics-files", required=True)
-    parser.add_argument("--insertsize-files", required=True)
-    parser.add_argument("--hsmetrics-files", required=True)
-    parser.add_argument("--qualmetrics-files", required=True)
-    parser.add_argument("--fingerprint-files", required=True)
-    parser.add_argument("--trimgalore-files", required=True)
     parser.add_argument("--file-prefix", required=True)
     parser.add_argument("--fp-genotypes", required=True)
     parser.add_argument("--pairing-file", required=True)
     parser.add_argument("--grouping-file", required=True)
     parser.add_argument("--request-file", required=True)
+    parser.add_argument("--minor-contam-threshold", default=".02")
+    parser.add_argument("--major-contam-threshold", default=".55")
+    parser.add_argument("--duplication-threshold", default="50")
+    parser.add_argument("--cov-warn-threshold", default="200")
+    parser.add_argument("--cov-fail-threshold", default="50")
     args = parser.parse_args()
     path_to_search = "/".join(args.globdir.split("/")[:-1])
     print "Search path: %s" % path_to_search
@@ -120,7 +125,7 @@ if __name__ == "__main__":
 
     print >>sys.stderr, "CutadaptSummary Generated!"
     print >>sys.stderr, "GENERATING THE GOSH DARN PDF!"
-    cmd = ['perl', os.path.join(path, 'qcPDF.pl'), '-pre', args.file_prefix, '-path', '.', '-log', 'qcPDF.log', '-request', args.request_file, '-version', '1.0']
+    cmd = ['perl', os.path.join(path, 'qcPDF.pl'), '-pre', args.file_prefix, '-path', '.', '-log', 'qcPDF.log', '-request', args.request_file, '-version', '1.0', '-cov_warn_threshold', args.cov_warn_threshold, '-cov_fail_threshold', args.cov_fail_threshold, '-dup_rate_threshold', args.duplication_threshold, '-minor_contam_threshold', args.minor_contam_threshold, '-major_contam_threshold', args.major_contam_threshold]
     print >>sys.stderr, " ".join(cmd)
     rv = subprocess.call(cmd, shell=False)
     if rv !=0:
@@ -128,6 +133,5 @@ if __name__ == "__main__":
         sys.exit(1)
     print >>sys.stderr, "PDF Generated!"
     
-
 
 

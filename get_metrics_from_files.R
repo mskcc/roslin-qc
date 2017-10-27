@@ -566,7 +566,7 @@ get.gc.bias <- function(path,type){
 
 
 
-get.detail.table <- function(path,type,id,user=NULL){
+get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_threshold, low_cov_fail_threshold, minor_contam_fail_threshold, major_contam_fail_threshold, user=NULL){
     mets = c("Unexpected Match(es)",
              "Unexpected Mismatch(es)",
              "Major Contamination",
@@ -661,11 +661,11 @@ get.detail.table <- function(path,type,id,user=NULL){
     if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = apply(tr[,c(2,3)],1,sum) }
 
     ## assign status to each sample based on fixed thresholds
-    detail[intersect(which(as.numeric(detail[,"Duplication"])>50),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn high duplication
-    detail[intersect(which(as.numeric(detail[,"Coverage"])<200),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn low-ish coverage
-    detail[which(as.numeric(detail[,"Coverage"])<50),1] = "0FAIL"  ## fail low coverage
-    detail[which(as.numeric(detail[,"Minor Contamination"])>0.02),1] = "0FAIL" ## fail minor contam
-    detail[which(as.numeric(detail[,"Major Contamination"])>0.55),1] = "0FAIL" ## fail major contam
+    detail[intersect(which(as.numeric(detail[,"Duplication"])>as.numeric(high_dup_threshold)),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn high duplication
+    detail[intersect(which(as.numeric(detail[,"Coverage"])<as.numeric(low_cov_warn_threshold)),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn low-ish coverage
+    detail[which(as.numeric(detail[,"Coverage"])<as.numeric(low_cov_fail_threshold)),1] = "0FAIL"  ## fail low coverage
+    detail[which(as.numeric(detail[,"Minor Contamination"])>as.numeric(minor_contam_fail_threshold)),1] = "0FAIL" ## fail minor contam
+    detail[which(as.numeric(detail[,"Major Contamination"])>as.numeric(major_contam_fail_threshold)),1] = "0FAIL" ## fail major contam
 
     detail = as.data.frame(detail)
 

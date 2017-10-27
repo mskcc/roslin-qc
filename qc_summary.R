@@ -14,7 +14,7 @@ path = as.character(path)
 source(file.path(bin,"get_metrics_from_files.R"))
 source(file.path(bin,"plot_qc.R"))
 
-print.image <- function(dat,metricType,sortOrder,plot.function,square=FALSE){
+print.image <- function(dat,metricType,sortOrder,plot.function,extras,square=FALSE){
     units = "in"
     width = 11
     height = 7
@@ -29,7 +29,7 @@ print.image <- function(dat,metricType,sortOrder,plot.function,square=FALSE){
         tryCatch({
                     #png(filename=paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".png",sep=""),type=type,units=units,width=width,height=height,res=res)
                     pdf(file=paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".pdf",sep=""),width=width,height=height)
-                    print(plot.function(dat))
+                    print(plot.function(dat, extras))
                     #plot.function(dat)
                     dev.off()
                  },
@@ -46,6 +46,7 @@ print.image <- function(dat,metricType,sortOrder,plot.function,square=FALSE){
 }
 
 cat(paste(date(),"\n"),file=logfile, append=TRUE)
+cat(paste(args,"\n"),file=logfile, append=TRUE)
 no.fails = TRUE
 
 dir.create(paste(path,"/images",sep=""),showWarnings=FALSE)
@@ -86,26 +87,38 @@ if(!is.null(mjc)){ mjc.summary = get.mean.frac.het.pos(type,dat=mjc) }
 if(!is.null(mnc)){ mnc.summary = get.mean.minor.allele.freq(type,dat=mnc) }
 
 ## print images
-print.image(al,"alignment","01",plot.alignment)
-print.image(al,"alignment_percentage","02",plot.alignment.percentage)
-print.image(cs,"capture_specificity","03",plot.capture.specificity)
-print.image(cs,"capture_specificity_percentage","04",plot.capture.specificity.percentage)
-print.image(is,"insert_size","05",plot.insert.size.distribution)
-print.image(is,"insert_size_peaks","06",plot.insert.peaks)
-print.image(da,"fingerprint","07",plot.fpc.sum) #,square=TRUE) }
-print.image(mjc,"major_contamination","08",plot.major.contamination) 
-print.image(mnc,"minor_contamination","09",plot.minor.contamination) 
-print.image(cc,"cdna_contamination","10",plot.cdna.contamination) 
-print.image(dp,"duplication","11",plot.duplication) 
-print.image(ls,"library_size","12",plot.library.size) 
-print.image(cv,"coverage","13",plot.coverage) 
-print.image(tr,"trimmed_reads","14",plot.trimmed.reads) 
-print.image(bq,"base_qualities","15",plot.base.qualities) 
-print.image(gc,"gc_bias","16",plot.gc.bias) #,square=TRUE)
+extras = list(major_contam_fail=as.numeric(major_contam_threshold),
+              minor_contam_fail=as.numeric(minor_contam_threshold),
+              minor_contam_warn=as.numeric(minor_contam_threshold)/2,
+              cov_warn=as.numeric(cov_warn_threshold),
+              cov_fail=as.numeric(cov_fail_threshold),
+              #i guess the calculation uses "50" to mean 50% but the plot thinks i mean 5000 percent unless i do this
+              #who knows
+              #ccharris 10-26-2017
+              dup_warn=as.numeric(dup_rate_threshold)/100)
+print.image(al,"alignment","01",plot.alignment,extras)
+print.image(al,"alignment_percentage","02",plot.alignment.percentage,extras)
+print.image(cs,"capture_specificity","03",plot.capture.specificity,extras)
+print.image(cs,"capture_specificity_percentage","04",plot.capture.specificity.percentage,extras)
+print.image(is,"insert_size","05",plot.insert.size.distribution,extras)
+print.image(is,"insert_size_peaks","06",plot.insert.peaks,extras)
+print.image(da,"fingerprint","07",plot.fpc.sum,extras) #,square=TRUE, }
+print.image(mjc,"major_contamination","08",plot.major.contamination,extras) 
+print.image(mnc,"minor_contamination","09",plot.minor.contamination,extras) 
+print.image(cc,"cdna_contamination","10",plot.cdna.contamination,extras) 
+print.image(dp,"duplication","11",plot.duplication,extras) 
+print.image(ls,"library_size","12",plot.library.size,extras) 
+print.image(cv,"coverage","13",plot.coverage,extras) 
+print.image(tr,"trimmed_reads","14",plot.trimmed.reads,extras) 
+print.image(bq,"base_qualities","15",plot.base.qualities,extras) 
+print.image(gc,"gc_bias","16",plot.gc.bias,extras) #,square=TRUE)
 
 ## write sample level summary table
 tryCatch({
-    detail = as.matrix(get.detail.table(path,type,id))
+    #args come from command line ##charris
+    #FIXME
+    #TERRIBLE!
+    detail = as.matrix(get.detail.table(path,type,id,dup_rate_threshold,cov_warn_threshold,cov_fail_threshold,minor_contam_threshold,major_contam_threshold))
     colnames(detail)[1] = "Auto-status"
     detail[which(detail[,1]=='0FAIL'),1] = 'FAIL'
     detail[which(detail[,1]=='1WARN'),1] = 'WARN'
