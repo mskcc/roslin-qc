@@ -82,7 +82,8 @@ def makeMatrix(args):
                     for line in fl:
                         if "#" in line or len(line.strip()) == 0:
                             continue
-                        if line.startswith("GC"):
+                        #ACCUMULATION_LEVEL for picard 2.9, GC for picard 1.129
+                        if line.startswith("ACCUMULATION_LEVEL") or line.startswith("GC"):
                             header = line.strip("\n").split("\t")
                             gc_idx = header.index("GC")
                             nc_idx = header.index("NORMALIZED_COVERAGE")
