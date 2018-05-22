@@ -78,11 +78,11 @@ plot.major.contamination <- function(dat,extras,sort.by='name'){
         geom_bar(stat="identity") +
         ylim(0, 1) +
         theme(legend.title=element_blank(),
-            axis.text.x=element_text(angle=45,hjust=1,size=12,color="black"),
+            axis.text.x=element_text(angle=90,vjust = 0.5,hjust=1,size=12,color="black"),
             axis.text.y=element_text(size=12,color="black")
         ) +
         xlab("") +
-        ylab("Fraction of position that are hetrozygous") +
+        ylab("Fraction of position that are heterozygous") +
         labs(title="Major Contamination Check") +
         geom_hline(aes(yintercept=as.numeric(extras$major_contam_fail)), color = "red", size=0.75) #+
         #coord_flip()
@@ -102,7 +102,7 @@ plot.minor.contamination <- function(dat,extras,sort.by='name'){
       geom_bar(stat="identity") +
       ylim(0, maximum) +
       theme(legend.title=element_blank(),
-            axis.text.x=element_text(angle=45,hjust=1,size=9,color="black"),
+            axis.text.x=element_text(angle=90,vjust = 0.5,hjust=1,size=12,color="black"),
             axis.text.y=element_text(size=12,color="black")
         ) +
       xlab("") +
@@ -123,7 +123,7 @@ plot.coverage <- function(dat,extras,sort.by='name'){
     }
     ggplot(dat, aes(x = Samples,y = Cov)) +
        geom_bar(stat = "identity") +
-       theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+       theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
@@ -145,7 +145,7 @@ plot.duplication <- function(duplication,extras,sort.by='name'){
     }
     ggplot(duplication, aes(x = Samples, y = DupRate)) +
         geom_bar(stat = "identity") +
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
@@ -167,7 +167,7 @@ plot.library.size <- function(librarySize,extras,sort.by='name'){
     }
     ggplot(librarySize, aes(x = Samples, y = Comp/1000000)) +
         geom_bar(stat = "identity") +
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
           axis.text.y=element_text(size=12,color="black")#,
           #legend.position="bottom",
           #legend.title = element_blank()
@@ -187,15 +187,15 @@ plot.capture.specificity <- function(captureSpecificity,extras,sort.by='name'){
     } else if(sort.by == 'name'){
         cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(cs.m$Sample)])
     }
-
-    ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = variable)) +
+    ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = factor(variable,levels=c('OffBait','NearBait','OnBait')) )) +
        geom_bar(stat="identity", width=0.7, color="black") +
-       theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+       theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
        ) +
-       scale_fill_brewer(palette="Set2",labels=c("On Bait Bases","Near Bait Bases","Off Bait Bases")) +
+       scale_fill_brewer(palette="Set2",labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
+       scale_fill_manual(values=c('#d73027','#fee090','#4575b4'),labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
        labs(title="Capture Specificity") +
        xlab("") +
        ylab("Total Bases (millions)") #+
@@ -216,14 +216,14 @@ plot.capture.specificity.percentage <- function(captureSpecificity,extras,sort.b
         cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(cs.m$Sample)])
     }
 
-    ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = variable)) +
+    ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = factor(variable,levels=c('OffBait','NearBait','OnBait')) )) +
         geom_bar(stat="identity", position="fill",width=0.7, color="black") +
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
         ) +
-        scale_fill_brewer(palette="Set2", labels = c("On Bait Bases", "Near Bait Bases", "Off Bait Bases")) +
+        scale_fill_manual(values=c('#d73027','#fee090','#4575b4'),labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
         labs(title="Capture Specificity") +
         xlab("") +
         ylab("Percent bases") +
@@ -244,7 +244,8 @@ plot.alignment <- function(alignment,extras,sort.by='name'){
 
     ggplot(density.m, aes(x = Samples, y = value, fill = variable)) +
         geom_bar(stat="identity", width=0.7, color="black")+
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        # theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=12),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
@@ -287,7 +288,8 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
 
     ggplot(density.m2, aes(x = Samples, y = perc, fill = variable)) +
         geom_bar(stat="identity", position="fill", width=0.7, color="black")+
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        # theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=12),
           axis.text.y=element_text(size=12,color="black"),
           legend.position="bottom",
           legend.title = element_blank()
@@ -308,13 +310,18 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
 plot.insert.size.distribution <- function(is.metrics, extras){
     if(is.null(is.metrics)){ return(NULL) }
     is.metrics = as.data.frame(is.metrics)
+
+    peak.is <- sapply(is.metrics, function(x) with(is.metrics,insert_size[which.max(x)]) )
+    newnames <- mapply(function(x,y) {paste0(x,'_',y)}, colnames(is.metrics), peak.is)
+    names(is.metrics)[2:ncol(is.metrics)] <- newnames[2:ncol(is.metrics)]
+
     insert_label <- colnames(is.metrics)[2:ncol(is.metrics)]
     insert.m <- melt(is.metrics, id.vars="insert_size")
     insert.m$insert_size <- as.integer(as.character(insert.m$insert_size))
     levels(insert.m$variable) <- insert_label
 
     legend.position = "right"
-    if(length(insert_label)>=20){ legend.position = "none" }
+    # if(length(insert_label)>=20){ legend.position = "none" }
 
     ggplot(insert.m,
       aes(x = insert_size, y = value, color = variable)) +
@@ -326,8 +333,8 @@ plot.insert.size.distribution <- function(is.metrics, extras){
       labs(title="Insert Size Distribution") +
       xlab("Insert size") +
       ylab("") +
-      scale_color_manual(name="Samples", values = rep(c48, 34)) #+
-      #guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(is.metrics)/20)))
+      scale_color_manual(name="Samples", values = rep(c48, 34)) +
+      guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(is.metrics)/40)))
 }
 
 plot.insert.peaks <- function(is.metrics, extras){
@@ -339,7 +346,7 @@ plot.insert.peaks <- function(is.metrics, extras){
 
     ggplot(peaks.m, aes(x = variable, y = value)) +
         geom_bar(stat="identity") +
-        theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
+        theme(axis.text.x = element_text(angle=90,size=12,vjust = 0.5,hjust=1,color="black"),
               axis.text.y = element_text(size=12,color="black")) +
         xlab("") +
         ylab("Insert Size") +
@@ -361,7 +368,7 @@ plot.trimmed.reads <- function(reads,extras,sort.by='name'){
     ggplot(reads.m, aes(x = Samples, y = value, fill = variable)) +
       geom_bar(stat = "identity", position = position_dodge(width=0.7), width = 0.7, color = "black") +
       theme(legend.title=element_blank(),
-            axis.text.x=element_text(angle=45,hjust=1,size=12,color="black"),
+            axis.text.x=element_text(angle=90,vjust = 0.5,hjust=1,size=12,color="black"),
             axis.text.y=element_text(size=12,color="black")
            ) +
       scale_fill_brewer(palette="Set2") +
@@ -375,7 +382,7 @@ plot.trimmed.reads <- function(reads,extras,sort.by='name'){
 plot.base.qualities <- function(base.qualities, extras){
     ggplot(base.qualities, aes(x = cycle, y = value, color = variable)) +
         geom_line(size=0.5) +
-        theme(legend.position="none") + #"right",
+        theme(legend.position="right") + #"right",
               #legend.title=element_blank(),
               #axis.text.x = element_text(angle=0)
              #) +
@@ -383,8 +390,8 @@ plot.base.qualities <- function(base.qualities, extras){
         scale_color_manual(name="Samples", values = rep(c48, 34)) +
         labs(title="Pre- & Post-Recalibration Quality Scores") +
         xlab("Quality Score") +
-        ylab("") #+
-        #guides(colour = guide_legend(override.aes = list(size=2),ncol=ceiling(ncol(base.qualities)/20)))
+        ylab("") +
+        guides(colour = guide_legend(override.aes = list(size=2),ncol=ceiling(ncol(base.qualities)/40)))
 }
 
 plot.pool.norm.genotype <- function(pool.norm.genotype){
@@ -416,7 +423,7 @@ plot.gc.bias <- function(gc.bias, extras){
     xt.m <- melt(gc.bias, id.vars="X")
 
     legend.position = "right"
-    if(ncol(gc.bias)>=20){ legend.position = "none" }
+    # if(ncol(gc.bias)>=20){ legend.position = "none" }
 
     ggplot(xt.m, aes(x = X, y = value, color = variable)) +
        coord_cartesian(xlim = c(.3, .8), ylim=c(0,yMax)) +
@@ -429,7 +436,7 @@ plot.gc.bias <- function(gc.bias, extras){
        xlab("GC-Content") +
        ylab("Normalized Coverage") +
        scale_color_manual(name="Samples", values = rep(c48, 34)) +
-       guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(gc.bias)/20)))
+       guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(gc.bias)/40)))
 
 }
 

@@ -906,7 +906,8 @@ create.alert <- function(sampList){
     alerts <- list()
     status <- "2PASS"
     failedSamps <- c(sampList[["fail"]],sampList[["warn"]])
-
+    failcount <- length(sampList[["fail"]])
+    warncount <- length(sampList[["warn"]])
     if(length(failedSamps) == 0){
         alerts[["status"]] <- status
         alerts[["fails"]] <- "None"
@@ -922,12 +923,12 @@ create.alert <- function(sampList){
     }
     
     ## set failure message (either short list of samples, or num total samples)
-    if(length(failedSamps) %in% seq(1,5)){
-        failMsg <- paste(failedSamps,collapse="</br>",sep="")
-    } else {
-        failMsg <- paste("<strong>",as.character(length(failedSamps))," samples</strong>",sep="")
-    }
-
+    # if(length(failedSamps) %in% seq(1,5)){
+    #     failMsg <- paste(failedSamps,collapse="</br>",sep="")
+    # } else {
+    #     failMsg <- paste("<strong>",as.character(length(failedSamps))," samples</strong>",sep="")
+    # }
+    failMsg<-paste(as.character(failcount),'Fail(s)',as.character(warncount),'Warning(s)')
     alerts[["status"]] <- status
     alerts[["fails"]] <- failMsg
     alerts[["num"]] <- length(failedSamps)
@@ -1051,7 +1052,7 @@ cat(c("path",path,"\n"))
     return(project.summary)
 }
 
-
+#what?? It seems like nothing changes if I comment this section out. ts
 get.mean.coverage <- function(type,coverage,path=NULL,pipeline_run_id=NULL,project_name=NULL){
     cov = as.numeric(coverage[,"Cov"])
     mean.coverage = data.frame(All=NA,Tumors=NA,Normals=NA)

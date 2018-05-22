@@ -49,9 +49,15 @@ if __name__ == "__main__":
     for i, files in enumerate([args.mdmetrics_files, args.hsmetrics_files]):
         temp_fh = open("temp_fof", "wb")
         filenames = find_files(path_to_search, pattern=files)
+        uniquelist = []
         for name in filenames:
             print name
-            temp_fh.write(name + "\n")
+            rootname = name.split('/')[-1]
+            if rootname in uniquelist:
+                pass
+            else:
+                uniquelist.append(rootname)
+                temp_fh.write(name + "\n")
         temp_fh.close()
         cmd = ["perl", os.path.join(path, "mergePicardMetrics.pl"), "-files", "temp_fof", ">", outfilenames[i]]
         print >>sys.stderr, " ".join(cmd)
@@ -61,9 +67,15 @@ if __name__ == "__main__":
     os.unlink("temp_fof")
     filenames= find_files(path_to_search, pattern=args.gcbias_files)
     temp_fh = open("temp_fof", "wb")
+    uniquelist = []
     for name in filenames:
         print name
-        temp_fh.write(name + "\n")
+        rootname = name.split('/')[-1]
+        if rootname in uniquelist:
+            pass
+        else:
+            uniquelist.append(rootname)
+            temp_fh.write(name + "\n")
     temp_fh.close()
     cmd = ['python', os.path.join(path,'mergeGcBiasMetrics.py'), 'temp_fof', args.file_prefix + "_GcBiasMetrics.txt" ]
     rv = subprocess.call(cmd, shell=False)
@@ -71,9 +83,15 @@ if __name__ == "__main__":
     print >>sys.stderr, "Generating Insert Size Histogram..."
     temp_fh = open("temp_fof", "wb")
     filenames = find_files(path_to_search, pattern=args.insertsize_files)
+    uniquelist = []
     for name in filenames:
         print name
-        temp_fh.write(name + "\n")
+        rootname = name.split('/')[-1]
+        if rootname in uniquelist:
+            pass
+        else:
+            uniquelist.append(rootname)
+            temp_fh.write(name + "\n")
     temp_fh.close()
     cmd = ['python', os.path.join(path,'mergeInsertSizeHistograms.py'), 'temp_fof', args.file_prefix + "_InsertSizeMetrics_Histograms.txt" ]
     print >>sys.stderr, " ".join(cmd)
@@ -85,8 +103,14 @@ if __name__ == "__main__":
     print >>sys.stderr, "Generating Fingerprint from DOC inputs..."
     temp_fh = open("temp_fof", "wb")
     filenames = find_files(path_to_search, pattern=args.fingerprint_files)
+    uniquelist = []
     for name in filenames:
-        temp_fh.write(name + "\n")
+        rootname = name.split('/')[-1]
+        if rootname in uniquelist:
+            pass
+        else:
+            uniquelist.append(rootname)
+            temp_fh.write(name + "\n")
     temp_fh.close()
     cmd = ['python', os.path.join(path, 'analyzeFingerprint.py'), '-pre', args.file_prefix, '-fp', args.fp_genotypes, 
             '-group', args.grouping_file, '-outdir', '.', '-pair', args.pairing_file, "-fof", 'temp_fof']
@@ -99,8 +123,14 @@ if __name__ == "__main__":
     print >>sys.stderr, "Generating Qual Files..."
     temp_fh = open("temp_fof", "wb")
     filenames = find_files(path_to_search, pattern=args.qualmetrics_files)
+    uniquelist = []
     for name in filenames:
-        temp_fh.write(name + "\n")
+        rootname = name.split('/')[-1]
+        if rootname in uniquelist:
+            pass
+        else:
+            uniquelist.append(rootname)
+            temp_fh.write(name + "\n")
     temp_fh.close()
     cmd = ['python', os.path.join(path, 'mergeMeanQualityHistograms.py'), 'temp_fof', args.file_prefix + "_post_recal_MeanQualityByCycle.txt", args.file_prefix + "_pre_recal_MeanQualityByCycle.txt"]
     print >>sys.stderr, " ".join(cmd)
@@ -112,9 +142,15 @@ if __name__ == "__main__":
     print >>sys.stderr, "Generating CutAdapt Summary.."
     temp_fh = open("temp_fof", "wb")
     filenames = find_files(path_to_search, pattern=args.trimgalore_files)
+    uniquelist = []
     for name in filenames:
         print name
-        temp_fh.write(name + "\n")
+        rootname = name.split('/')[-1]
+        if rootname in uniquelist:
+            pass
+        else:
+            uniquelist.append(rootname)
+            temp_fh.write(name + "\n")
     temp_fh.close()
     cmd = ['python', os.path.join(path,'mergeCutAdaptStats.py'), 'temp_fof', args.file_prefix + "_CutAdaptStats.txt", args.pairing_file]
     print >>sys.stderr, cmd
