@@ -194,7 +194,7 @@ plot.capture.specificity <- function(captureSpecificity,extras,sort.by='name'){
           legend.position="bottom",
           legend.title = element_blank()
        ) +
-       scale_fill_brewer(palette="Set2",labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
+    #    scale_fill_brewer(palette="Set2",labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
        scale_fill_manual(values=c('#d73027','#fee090','#4575b4'),labels=c("Off Bait Bases","Near Bait Bases","On Bait Bases")) +
        labs(title="Capture Specificity") +
        xlab("") +
@@ -242,7 +242,7 @@ plot.alignment <- function(alignment,extras,sort.by='name'){
         density.m$Samples <- factor(density.m$Samples, levels=density.m$Samples[order(density.m$Samples)])
     }
 
-    ggplot(density.m, aes(x = Samples, y = value, fill = variable)) +
+    ggplot(density.m, aes(x = Samples, y = value, fill = factor(variable, levels=c("NeitherAlign","OneAlign","BothAlign")) ) ) +
         geom_bar(stat="identity", width=0.7, color="black")+
         # theme(axis.text.x = element_text(angle=45,size=12,hjust=1,color="black"),
         theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=12),
@@ -250,7 +250,8 @@ plot.alignment <- function(alignment,extras,sort.by='name'){
           legend.position="bottom",
           legend.title = element_blank()
         ) +
-        scale_fill_manual(name="Type", values = c3, labels = c("Both Reads Aligned", "One Read Aligned", "Neither Read Aligned")) +
+        # scale_fill_manual(name="Type", values = c3, labels = c("Neither Read Aligned", "One Read Aligned", "Both Reads Aligned")) +
+        scale_fill_manual(values=c('#d73027','#fee090','#4575b4'),labels=c("Neither Read Aligned", "One Read Aligned", "Both Reads Aligned")) +
         labs(title="Cluster Density & Alignment Rate") +
         xlab("") +
         ylab("xMillion") #+
@@ -294,12 +295,14 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
           legend.position="bottom",
           legend.title = element_blank()
         ) +
-        scale_fill_manual(
-            name="Type",
-            values = rev(c3),
-            labels = rev(c("Both Reads Aligned",
-                            "One Read Aligned",
-                            "Neither Read Aligned"))) +
+        scale_fill_manual(values=c('#d73027','#fee090','#4575b4'),labels=c("Neither Read Aligned", "One Read Aligned", "Both Reads Aligned")) +
+
+        # scale_fill_manual(
+        #     name="Type",
+        #     values = rev(c3),
+        #     labels = rev(c("Both Reads Aligned",
+        #                     "One Read Aligned",
+        #                     "Neither Read Aligned"))) +
         labs(title="Cluster Density & Alignment Rate") +
         xlab("") +
         ylab("") +
@@ -312,7 +315,7 @@ plot.insert.size.distribution <- function(is.metrics, extras){
     is.metrics = as.data.frame(is.metrics)
 
     peak.is <- sapply(is.metrics, function(x) with(is.metrics,insert_size[which.max(x)]) )
-    newnames <- mapply(function(x,y) {paste0(x,'_',y)}, colnames(is.metrics), peak.is)
+    newnames <- mapply(function(x,y) {paste0(x,' Peak:',y)}, colnames(is.metrics), peak.is)
     names(is.metrics)[2:ncol(is.metrics)] <- newnames[2:ncol(is.metrics)]
 
     insert_label <- colnames(is.metrics)[2:ncol(is.metrics)]

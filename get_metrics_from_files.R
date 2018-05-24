@@ -658,7 +658,7 @@ get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_thresh
     if(!is.null(cs)){ detail[match(cs$Sample, row.names(detail)),"On Bait Bases (millions)"] = round(cs[,2]/1000000) }
     if(!is.null(aln)){ detail[match(aln$Sample, row.names(detail)),"Aligned Reads (millions)"] = round(aln[,2]/1000000) }
     if(!is.null(is)){ detail[match(is$Sample, row.names(detail)),"Insert Size Peak"] = is$Peak }  
-    if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = apply(tr[,c(2,3)],1,sum) }
+    if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = rowMeans(tr[,c(2,3)]) }#apply(tr[,c(2,3)],1,sum) }
 
     ## assign status to each sample based on fixed thresholds
     detail[intersect(which(as.numeric(detail[,"Duplication"])>as.numeric(high_dup_threshold)),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn high duplication
@@ -864,7 +864,7 @@ samples.low.alignment.rate <- function(path,type,min.alignment=0.95){
     return(create.alert(samps))
 }
 
-samples.high.duplication <- function(path,type,max.dup=0.50){
+samples.high.duplication <- function(path,type,max.dup=0.80){
     duplication = get.duplication(path,type)
     samps = list("fail"=c(),"warn"=c())
     samps[["warn"]] <- as.vector(duplication[which(duplication$DupRate>max.dup),1])

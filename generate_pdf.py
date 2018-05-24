@@ -37,7 +37,7 @@ if __name__ == "__main__":
     parser.add_argument("--request-file", required=True)
     parser.add_argument("--minor-contam-threshold", default=".02")
     parser.add_argument("--major-contam-threshold", default=".55")
-    parser.add_argument("--duplication-threshold", default="50")
+    parser.add_argument("--duplication-threshold", default="80")
     parser.add_argument("--cov-warn-threshold", default="200")
     parser.add_argument("--cov-fail-threshold", default="50")
     args = parser.parse_args()
