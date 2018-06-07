@@ -4,7 +4,9 @@
  */
 package org.mskcc.bic.qcpdf;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import com.sampullara.cli.*;
@@ -15,7 +17,10 @@ import com.itextpdf.text.DocumentException;
  * @author byrne
  */
 public class QCPDF {
-    
+   
+    /*
+    * Interface to generate QC PDF for variants pipeline
+    */ 
     /**
      * @param args the command line arguments
      */
@@ -54,6 +59,21 @@ public class QCPDF {
 
     @Argument(alias = "pl", description = "Pipeline name", required = false)
     private static String pipeline;
+  
+    @Argument(alias = "cf", description = "Coverage fail threshold", required = false)
+    private static String coverageFail;
+
+    @Argument(alias = "cw", description = "Coverage warning threshold", required = false)
+    private static String coverageWarn;
+
+    @Argument(alias = "dupWarn", description = "Duplication warnig threshold", required = false)
+    private static String duplicationWarn;
+
+    @Argument(alias = "majorCF", description = "Major contamination fail", required = false)
+    private static String majorContaminationFail;
+
+    @Argument(alias = "minorCF", description = "Minor contamination fail", required = false)
+    private static String minorContaminationFail;
 
     public static void exitWithError(String msg){
         System.err.println("ERROR: "+msg);
@@ -110,7 +130,6 @@ public class QCPDF {
             Args.usage(q);
         } else {
             List<String> extra = Args.parse(q, args);
-
             if(requestFile != null && requestFile.length() > 0){
                 File req = new File(requestFile);
                 if(!req.exists()){
@@ -172,16 +191,32 @@ public class QCPDF {
                    exitWithError("Output directory does not exist: "+outputDirectory);
                }
             }
-            q.writeQCPDF();
+            Map<String, String> qcConfigurations = new HashMap<>();
+            if(coverageFail != null){
+                qcConfigurations.put(QCConstants.COVERAGE_FAIL, coverageFail);
+            }
+            if(coverageWarn != null){
+                qcConfigurations.put(QCConstants.COVERAGE_WARN, coverageWarn);
+            }
+            if(duplicationWarn != null){
+                qcConfigurations.put(QCConstants.DUPLICATION_WARN, duplicationWarn);
+            }
+            if(majorContaminationFail != null){
+                qcConfigurations.put(QCConstants.MAJOR_CONTAMINATION_FAIL, majorContaminationFail);
+            }
+            if(minorContaminationFail != null){
+                qcConfigurations.put(QCConstants.MINOR_CONTAMINATION_FAIL, minorContaminationFail);
+            }
+            q.writeQCPDF(qcConfigurations);
         }
     }
 
-    private void writeQCPDF(){
+    private void writeQCPDF(Map<String, String> qcConfigurations){
         try{
             System.out.println("Writing PDF report for Project "+project+"..."); 
 
             ReportPDF pdf = new ReportPDF(project,pi,piID,inv,invID,runNum,assay,pipeline,pipelineVersion,metricsDirectory,outputDirectory);
-            pdf.writePDF();
+            pdf.writePDF(qcConfigurations);
     
             System.out.println("Done.");
         

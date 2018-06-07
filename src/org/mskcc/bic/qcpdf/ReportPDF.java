@@ -53,6 +53,11 @@ import java.text.SimpleDateFormat;
 
 public class ReportPDF {
 
+    /*
+ *    Use QCSummary, request parameters, and directory of previously-generated pdf files of plots
+ *    to create a dynamic PDF report for variants pipeline QC metrics
+ * */
+
     class MyFooter extends PdfPageEventHelper {
         Font ffont = new Font(Font.FontFamily.UNDEFINED, 8);
  
@@ -177,13 +182,15 @@ public class ReportPDF {
         this.writer = PdfWriter.getInstance(this.reportPDF, new FileOutputStream(outputDir+"/"+reportPDFname));
    }
 	
-    public void writePDF(){
+    public void writePDF(Map<String, String> qcConfigurations){
 	try{
             String projectSumFile = this.metricsDir + "/Proj_" + this.id + "_ProjectSummary.txt";
             String sampleSumFile = this.metricsDir + "/Proj_" + this.id + "_SampleSummary.txt";
 
-            this.qcSummary = new QCSummary(projectSumFile,sampleSumFile);
-            //PdfWriter writer = PdfWriter.getInstance(this.reportPDF, new FileOutputStream(outputDir+"/"+reportPDFname)); 
+            // QCSummary object contains all project-level and sample-level metrics and auto-statuses
+            // to be displayed in the report
+            this.qcSummary = new QCSummary(projectSumFile,sampleSumFile, qcConfigurations);
+
             writer.setStrictImageSequence(true);
       
             // set up footer to contain page numbers
@@ -385,8 +392,11 @@ public class ReportPDF {
 
     public void createFigureTables() throws IOException, DocumentException {
         /*
-        Create a one-column table to format each page that will contain an image
+        Create a one-column, borderless table to format each page that will contain an image
         and store them in the document map to be added to the document later
+
+        The first row in the table contains the anchor for linking from the TOC, 
+        second row conatins the image, followed by a spacer row, then caption row
         */
 
         int indentation = 0;
@@ -406,9 +416,6 @@ public class ReportPDF {
                 float scaler = ((this.reportPDF.getPageSize().getWidth() - this.reportPDF.leftMargin()
                                       - this.reportPDF.rightMargin() - indentation) / plot.getWidth()) * 95;
                 plot.scalePercent(scaler);
-
-                //plot.setAbsolutePosition((this.reportPDF.getPageSize().getWidth() - plot.getScaledWidth()) / 2,
-                 //                           (this.reportPDF.getPageSize().getHeight() - plot.getScaledHeight()));//  / 2);
 
                 String captionStr = "";
                 String pageDesc = "";
