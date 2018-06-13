@@ -84,21 +84,22 @@ public class QCSummary {
     private String coverageFailures;
     private String librarySizeFailures;
 
-    private static final Float COVERAGE_FAIL = new Float(50);
-    private static final Float COVERAGE_WARN = new Float(200);
-    private static final Float DUPLICATION_WARN = new Float(50);
-    private static final Float MAJOR_CONTAMINATION_FAIL = new Float(0.55);
-    private static final Float MINOR_CONTAMINATION_FAIL = new Float(0.02); 
-
     private Map<String, Map<String, Map<String, Object>>> summaryMap = new HashMap<>(); //Map<Sample, <Metric, <['value'|'status'], Object>>>
+    private Map<String, String> qcConfigurations;
 
-    public QCSummary(String projectSummaryFile, String detailSummaryFile){
+    public QCSummary(String projectSummaryFile, String detailSummaryFile, Map<String, String> qcConfigurations){
         // to do: validate files
         storeProjectSummary(projectSummaryFile);
         storeSampleDetail(detailSummaryFile);
+        this.qcConfigurations = qcConfigurations;
     }
 
     public void storeProjectSummary(String projectSummaryFile){
+        /*
+        * Parse summary file and store values as appropriate data type
+        * for later use.     
+        */
+
         try{
             BufferedReader buf = new BufferedReader(new FileReader(projectSummaryFile));
             List<String> headers = Arrays.asList(buf.readLine().split("\t"));
@@ -246,6 +247,11 @@ public class QCSummary {
     }
 
     public void storeSampleDetail(String detailSummaryFile){
+        /*
+        * Parse sample detail file and store values, assign pass/warn/fail
+        * status based on fixed thresholds
+        */
+
         try{
             BufferedReader buf = new BufferedReader(new FileReader(detailSummaryFile));
             List<String> headers = Arrays.asList(buf.readLine().split("\t"));
@@ -253,6 +259,26 @@ public class QCSummary {
             String samp;
             DecimalFormat twoD = new DecimalFormat("0.00");
             DecimalFormat dfInt = new DecimalFormat("#");
+            Float coverageFail = QCConstants.IMPACT_COVERAGE_FAIL;
+            if(qcConfigurations.containsKey(QCConstants.COVERAGE_FAIL)){
+               coverageFail = Float.parseFloat(qcConfigurations.get(QCConstants.COVERAGE_FAIL));
+            }
+            Float coverageWarn = QCConstants.IMPACT_COVERAGE_WARN;
+            if(qcConfigurations.containsKey(QCConstants.COVERAGE_WARN)){
+               coverageWarn = Float.parseFloat(qcConfigurations.get(QCConstants.COVERAGE_WARN));
+            }
+            Float dupWarn = QCConstants.IMPACT_DUPLICATION_WARN;
+            if(qcConfigurations.containsKey(QCConstants.DUPLICATION_WARN)){
+               dupWarn = Float.parseFloat(qcConfigurations.get(QCConstants.DUPLICATION_WARN));
+            }
+            Float majorContFail = QCConstants.IMPACT_MAJOR_CONTAMINATION_FAIL;
+            if(qcConfigurations.containsKey(QCConstants.MAJOR_CONTAMINATION_FAIL)){
+               majorContFail = Float.parseFloat(qcConfigurations.get(QCConstants.MAJOR_CONTAMINATION_FAIL));
+            }
+            Float minorContFail = QCConstants.IMPACT_MINOR_CONTAMINATION_FAIL; 
+            if(qcConfigurations.containsKey(QCConstants.MINOR_CONTAMINATION_FAIL)){
+               minorContFail = Float.parseFloat(qcConfigurations.get(QCConstants.MINOR_CONTAMINATION_FAIL));
+            }
             while(true){
                 String line = buf.readLine();
                 if(line == null){
@@ -292,7 +318,7 @@ public class QCSummary {
                     } catch (NumberFormatException e){
                         val = new Float(0.0);
                     }
-                    if (val > MAJOR_CONTAMINATION_FAIL){
+                    if (val > majorContFail){
                         status = "FAIL";
                     }
                     valMap.put(MAJOR_CONTAMINATION_HEADER, new HashMap<String, Object>());
@@ -305,7 +331,7 @@ public class QCSummary {
                     } catch (NumberFormatException e){
                         val = new Float(0.0);
                     }
-                    if (val > MINOR_CONTAMINATION_FAIL){
+                    if (val > minorContFail){
                         status = "FAIL";
                     }
                     valMap.put(MINOR_CONTAMINATION_HEADER, new HashMap<String, Object>());
@@ -316,9 +342,9 @@ public class QCSummary {
                     Integer cov;
                     try{
                         cov = new Integer(values[headers.indexOf(COVERAGE_HEADER)]);
-                        if (cov < COVERAGE_FAIL){
+                        if (cov < coverageFail){
                             status = "FAIL";
-                        } else if (cov < COVERAGE_WARN){
+                        } else if (cov < coverageWarn){
                             status = "WARN";
                         }
                     } catch (NumberFormatException e){
@@ -331,7 +357,7 @@ public class QCSummary {
                     status = "PASS";
                     try{
                         val = new Float(values[headers.indexOf(DUPLICATION_HEADER)]);
-                        if (val > DUPLICATION_WARN){
+                        if (val > dupWarn){
                             status = "WARN";
                         }
                     } catch (NumberFormatException e){
