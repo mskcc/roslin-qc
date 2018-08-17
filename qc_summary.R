@@ -65,7 +65,7 @@ cv = get.coverage(path,type)
 da = get.fpc.sum(path,type)
 mjc = get.major.contamination(path,type)
 mnc = get.minor.contamination(path,type)
-cc = get.cdna.contamination(path,type)
+#cc = get.cdna.contamination(path,type)
 gc = get.gc.bias(path,type)
 
 is.summary = NULL
@@ -105,7 +105,7 @@ print.image(is,"insert_size_peaks","06",plot.insert.peaks,extras)
 print.image(da,"fingerprint","07",plot.fpc.sum,extras) #,square=TRUE, }
 print.image(mjc,"major_contamination","08",plot.major.contamination,extras) 
 print.image(mnc,"minor_contamination","09",plot.minor.contamination,extras) 
-print.image(cc,"cdna_contamination","10",plot.cdna.contamination,extras) 
+#print.image(cc,"cdna_contamination","10",plot.cdna.contamination,extras) 
 print.image(dp,"duplication","11",plot.duplication,extras) 
 print.image(ls,"library_size","12",plot.library.size,extras) 
 print.image(cv,"coverage","13",plot.coverage,extras) 
@@ -118,7 +118,7 @@ tryCatch({
     #args come from command line ##charris
     #FIXME
     #TERRIBLE!
-    detail = as.matrix(get.detail.table(path,type,id,dup_rate_threshold,cov_warn_threshold,cov_fail_threshold,minor_contam_threshold,major_contam_threshold))
+    detail = as.matrix(get.detail.table(path,type,dup_rate_threshold,cov_warn_threshold,cov_fail_threshold,minor_contam_threshold,major_contam_threshold))
     colnames(detail)[1] = "Auto-status"
     detail[which(detail[,1]=='0FAIL'),1] = 'FAIL'
     detail[which(detail[,1]=='1WARN'),1] = 'WARN'

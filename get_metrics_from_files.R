@@ -119,9 +119,6 @@ get.md.metrics <- function(path,type){
     print(file)
     if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     dat <- read.delim(file,check.names=FALSE)
-    # This normalizes the sample names and removes the last __1
-    # which is the library number
-    dat$LIBRARY = sub("_1$", "", dat$LIBRARY)
     return(dat)
 }
 
@@ -256,7 +253,6 @@ get.unexpected.mismatches <- function(path,type){
 
 get.major.contamination <- function(path,type){
     if(type == 'exome'){
-#        path = paste(path,"fingerprint",sep="/")  
         filename = dir(path)[grep("_MajorContamination.txt",dir(path))]
         if(length(filename)==0) { return(NULL) }
         file = paste(path,filename,sep="/")
@@ -566,7 +562,7 @@ get.gc.bias <- function(path,type){
 
 
 
-get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_threshold, low_cov_fail_threshold, minor_contam_fail_threshold, major_contam_fail_threshold, user=NULL){
+get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold, low_cov_fail_threshold, minor_contam_fail_threshold, major_contam_fail_threshold, user=NULL){
     mets = c("Unexpected Match(es)",
              "Unexpected Mismatch(es)",
              "Major Contamination",
@@ -581,7 +577,7 @@ get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_thresh
         title = get.title(path,type)
         samples = paste(title$Barcode,title$Sample_ID,sep=": ")
     } else {
-        samples = as.vector(get.md.metrics(path,type)$LIBRARY)
+        samples = as.vector(get.trimmed.reads(path,type)$Sample)
     }
 
     detail = matrix("",nrow=length(samples),ncol=length(other)+length(mets))
@@ -653,10 +649,10 @@ get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_thresh
     if(!is.null(majc)){ detail[match(majc$Sample, row.names(detail)), "Major Contamination"] = round(majc[,2],digits=2) }
     if(!is.null(minc)){ detail[match(minc$Sample, row.names(detail)), "Minor Contamination"] = round(minc[,2],digits=2) }
     if(!is.null(cov)){ detail[match(cov$Sample, row.names(detail)), "Coverage"] = round(cov[,2]) }
-    if(!is.null(dup)){ detail[match(dup$Sample, row.names(detail)),"Duplication"] = signif(dup[,2]*100,digits=3) }
-    if(!is.null(lib)){ detail[match(lib$Sample, row.names(detail)),"Library Size (millions)"] = round(lib[,2]/1000000) }
+    if(!is.null(dup)){ detail[order(row.names(detail)),"Duplication"] = signif(dup[order(dup$Samples),2]*100,digits=3) }
+    if(!is.null(lib)){ detail[order(row.names(detail)),"Library Size (millions)"] = round(lib[order(lib$Samples),2]/1000000) }
     if(!is.null(cs)){ detail[match(cs$Sample, row.names(detail)),"On Bait Bases (millions)"] = round(cs[,2]/1000000) }
-    if(!is.null(aln)){ detail[match(aln$Sample, row.names(detail)),"Aligned Reads (millions)"] = round(aln[,2]/1000000) }
+    if(!is.null(aln)){ detail[order(row.names(detail)),"Aligned Reads (millions)"] = round(aln[order(aln$Samples),2]/1000000) }
     if(!is.null(is)){ detail[match(is$Sample, row.names(detail)),"Insert Size Peak"] = is$Peak }  
     if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = rowMeans(tr[,c(2,3)]) }#apply(tr[,c(2,3)],1,sum) }
 
@@ -671,7 +667,7 @@ get.detail.table <- function(path,type,id,high_dup_threshold,low_cov_warn_thresh
 
     if(!is.null(user) && nchar(user)>0 && user!='Unidentified'){
 
-        lastReview = get.latest.qc.review(id)
+        #lastReview = get.latest.qc.review(id)
         failures = detail$Sample[which(detail[,1] == '0FAIL')]
         actions = c()
         comments = c()
