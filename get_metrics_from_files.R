@@ -541,23 +541,30 @@ get.cdna.contamination.summary <- function(path,type){
 
 get.gc.bias <- function(path,type){
     dat = NULL
-    if(type == 'exome'){
-        filename = dir(path)[grep("_GcBiasMetrics.txt",dir(path))]
-    } else {
-        filename = dir(path)[grep("_ALL_gcbias.txt",dir(path))]
-        title = get.title(path,type)
-        if(is.null(title)){ return(NULL) }
-    }
+    filename = dir(path)[grep("_GcBiasMetrics.txt",dir(path))]
     if(length(filename) == 0) { return(NULL) }
     file = paste(path,filename,sep="/")
-    if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     dat <- read.delim(file,header=T,sep="\t",check.names=FALSE)
-    if(type == "targeted"){
-        colnames(dat) = c("X",paste(title$Barcode,title$Sample_ID, sep=": "))
-    } else {
-        colnames(dat)[1] = "X"
-    }
     return(dat)
+
+    # if(type == 'exome'){
+    #     # filename = dir(path)[grep("_GcBiasMetrics.txt",dir(path))]
+    #     filename = dir(path)[grep("_GcContent.txt",dir(path))]
+    # } else {
+    #     filename = dir(path)[grep("_ALL_gcbias.txt",dir(path))]
+    #     title = get.title(path,type)
+    #     if(is.null(title)){ return(NULL) }
+    # }
+    # if(length(filename) == 0) { return(NULL) }
+    # file = paste(path,filename,sep="/")
+    # if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
+    # dat <- read.delim(file,header=T,sep="\t",check.names=FALSE)
+    # if(type == "targeted"){
+    #     colnames(dat) = c("X",paste(title$Barcode,title$Sample_ID, sep=": "))
+    # } else {
+    #     colnames(dat)[1] = "X"
+    # }
+    # return(dat)
 }
 
 

@@ -419,27 +419,37 @@ plot.gc.bias <- function(gc.bias, extras){
     # also limit to GC% between 30% and 80% and get the max value
     # over this inverval to scale the y-axis
 
-    gc.bias[,1]=gc.bias[,1]/100
+    # gc.bias[,1]=gc.bias[,1]/100
 
-    yMax=ceiling(max(gc.bias[31:81,2:ncol(gc.bias)]))
+    # yMax=ceiling(max(gc.bias[31:81,2:ncol(gc.bias)]))
 
-    xt.m <- melt(gc.bias, id.vars="X")
+    # xt.m <- melt(gc.bias, id.vars="X")
 
-    legend.position = "right"
-    # if(ncol(gc.bias)>=20){ legend.position = "none" }
+    # legend.position = "right"
+    # # if(ncol(gc.bias)>=20){ legend.position = "none" }
 
-    ggplot(xt.m, aes(x = X, y = value, color = variable)) +
-       coord_cartesian(xlim = c(.3, .8), ylim=c(0,yMax)) +
-       geom_line(size=0.5) +
-       theme(legend.position=legend.position) + #"right",
-              #legend.title=element_blank(),
-              #axis.text.x = element_text(angle=0)
-             #) +
-       labs(title="Normalized Coverage vs GC-Content") +
-       xlab("GC-Content") +
-       ylab("Normalized Coverage") +
-       scale_color_manual(name="Samples", values = rep(c48, 34)) +
-       guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(gc.bias)/40)))
+    # ggplot(xt.m, aes(x = X, y = value, color = variable)) +
+    #    coord_cartesian(xlim = c(.3, .8), ylim=c(0,yMax)) +
+    #    geom_line(size=0.5) +
+    #    theme(legend.position=legend.position) + #"right",
+    #           #legend.title=element_blank(),
+    #           #axis.text.x = element_text(angle=0)
+    #          #) +
+    #    labs(title="Normalized Coverage vs GC-Content") +
+    #    xlab("GC-Content") +
+    #    ylab("Normalized Coverage") +
+    #    scale_color_manual(name="Samples", values = rep(c48, 34)) +
+    #    guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(gc.bias)/40)))
+
+    ggplot(data=gc.bias,aes(x=gc,y=normcoverage,color=sample)) + geom_line() +
+    xlab("GC Content") +
+    ylab("Normalized Coverage") +
+    coord_cartesian(xlim = c(.3, .8)) +
+    labs(title="Normalized Coverage vs GC-Content") +
+    theme(legend.position="right") +
+    # scale_color_manual(name="Samples", values = rep(c48, 34)) +
+    guides(colour = guide_legend(override.aes = list(size=2),ncol=1))
+
 
 }
 

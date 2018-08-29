@@ -22,7 +22,7 @@ if __name__ == "__main__":
     path = os.path.dirname(os.path.realpath(__file__))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gcbias-files", default="*.gcbiasmetrics")
+    parser.add_argument("--gcbias-files", default="*.hstmetrics")
     parser.add_argument("--mdmetrics-files", default="*.md_metrics")
     parser.add_argument("--insertsize-files", default="*.ismetrics")
     parser.add_argument("--hsmetrics-files", default="*.hsmetrics")
