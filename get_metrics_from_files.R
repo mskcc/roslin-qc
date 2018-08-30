@@ -424,9 +424,6 @@ get.duplication <- function(path,type){
         dat = get.md.metrics(path,type)
         if(is.null(dat)){ return(NULL) }
         sample.labels = dat$LIBRARY
-        
-        sample.labels = sub("_1$", "", sample.labels)
-
     }
     duplication <- data.frame(Samples = sample.labels,DupRate = dat$PERCENT_DUPLICATION)
     return(duplication)
