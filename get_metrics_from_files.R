@@ -119,6 +119,8 @@ get.md.metrics <- function(path,type){
     print(file)
     if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     dat <- read.delim(file,check.names=FALSE)
+    dat$LIBRARY = sub("_1$", "", dat$LIBRARY)
+    dat$LIBRARY = sub("[A-Z0-9]{14}_bc[0-9]+$", "", dat$LIBRARY)
     return(dat)
 }
 
@@ -422,6 +424,9 @@ get.duplication <- function(path,type){
         dat = get.md.metrics(path,type)
         if(is.null(dat)){ return(NULL) }
         sample.labels = dat$LIBRARY
+        
+        sample.labels = sub("_1$", "", sample.labels)
+
     }
     duplication <- data.frame(Samples = sample.labels,DupRate = dat$PERCENT_DUPLICATION)
     return(duplication)
@@ -585,6 +590,7 @@ get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold
         samples = paste(title$Barcode,title$Sample_ID,sep=": ")
     } else {
         samples = as.vector(get.trimmed.reads(path,type)$Sample)
+        
     }
 
     detail = matrix("",nrow=length(samples),ncol=length(other)+length(mets))
