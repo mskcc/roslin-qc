@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
+import argparse
 import sys
 import re
 import os
@@ -59,18 +60,30 @@ def printMatrix(matrix,outFile):
             print>>out,"\t".join([str(x) for x in r])
     return
 
-def makeMatrix(args):
+def makeMatrix():
     """
     Find files to parse, create one matrix of all counts and print 
     matrix to file
     """
 
-    if len(args) == 3:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--clstats1", nargs="+", required=True)
+    parser.add_argument("--clstats2", nargs="+", required=True)
+    parser.add_argument("--pairing_file", required=True)
+    parser.add_argument("--output", required=True)
+    args = parser.parse_args()
+
+    files = args.clstats1 + args.clstats2
+    
+#    if len(args) == 3:
         #lazily take pairfile instead of mapping, bc we already have it in cwl
-        fileoffiles,outFile,pairfile = args
-    else:
-        usage()
-        sys.exit(1)
+#        fileoffiles,outFile,pairfile = args
+#    else:
+#        usage()
+#        sys.exit(1)
+    pairfile = args.pairing_file
+    outFile = args.output
+
     fh = open(pairfile)
     samples = []
     while(1):
@@ -84,13 +97,6 @@ def makeMatrix(args):
 
     ## find all cutadapt stats files using pattern 
     #files = findFiles(rootDir,filePattern)
-    files = []
-    fh = open(fileoffiles,"r")
-    while(1):
-        line = fh.readline()
-        if not line:
-            break
-        files.append(line.strip())
 
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"
@@ -153,5 +159,5 @@ def makeMatrix(args):
         sys.exit(-1)
 
 if __name__ == '__main__':
-    makeMatrix(sys.argv[1:])
+    makeMatrix()
 

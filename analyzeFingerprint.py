@@ -1,4 +1,4 @@
-#!/opt/common/python
+#!/usr/bin/env python
 
 from __future__ import print_function
 import sys
@@ -333,7 +333,8 @@ def findFiles(rootDir,pattern):
 def get_args(sysargs):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-fof', required=True, help="file of files")
+#    parser.add_argument('-fof', required=True, help="file of files")
+    parser.add_argument('-files', required=True, nargs='+', help="files")
     parser.add_argument('-pre',required=True,help='project prefix')
     parser.add_argument('-fp',required=True,help='fingerprint genotypes file')
     parser.add_argument('-group',required=True,help='sample grouping file')
@@ -346,14 +347,8 @@ def get_args(sysargs):
 
 
 if __name__ == '__main__':
-    args = get_args(sys.argv)
-    fh = open(args.fof, "rb")
-    docFiles = []
-    while(1):
-        line = fh.readline()
-        if not line:
-             break
-        docFiles.append(line.strip())
+    args = get_args(sys.argv) 
+    docFiles = args.files
     groups = makeGroups(args.group)
     pairs = makePairs(args.pair)
     getContamination(docFiles,args.fp,args.pre,groups,pairs,args.outdir)

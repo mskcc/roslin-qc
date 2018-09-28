@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
+import argparse
 import sys
 import re
 import os
@@ -11,13 +12,8 @@ from collections import OrderedDict
 ## per sample) and create a matrix with one row for each gene and one column for each sample
 #####################################
 
-#####################################
-## Usage: /opt/bin/python/ makeCountMatrix.py rootDir patternToSearch outputFileName
-## Example: /opt/bin/python makeCountMatrix.py /ifs/res/liang/RNASeq/Proj2983_MassagueJ .htseq_count Proj2983_MassagueJ_htseq.count_allSamples.txt
-#####################################
-
 def usage():
-    print "/opt/bin/python rnaseq_count_matrix.py rootDir patternToSearch outputFileName"
+    print "You dun goofed"
     return
 
 
@@ -38,17 +34,17 @@ def printMatrix(matrix,allSamps,outFile):
             print>>out,"\t".join([str(x) for x in [insertSize]+[matrix[insertSize][samp] for samp in allSamps]])
     return
 
-def makeMatrix(args):
+def makeMatrix():
     """
     Find files to parse, create one matrix of all counts and print 
     matrix to file
     """
 
-    if len(args) == 2:
-        fileoffiles,outFile = args
-    else:
-        usage()
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output")
+    parser.add_argument("--files", nargs="+")
+
+    args = parser.parse_args()
 
     ## store all values in an ordered dict, keyed by sample
     matrix = OrderedDict()
@@ -56,14 +52,9 @@ def makeMatrix(args):
 
     ## find all cutadapt stats files using pattern 
     #files = findFiles(rootDir,filePattern)
-    files = []
-    fh = open(fileoffiles,"r")
-    while(1):
-        line = fh.readline()
-        if not line:
-            break
-        files.append(line.strip())
 
+    files = args.files
+    outFile = args.output
 
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"
@@ -100,4 +91,4 @@ def makeMatrix(args):
         sys.exit(-1)
 
 if __name__ == '__main__':
-    makeMatrix(sys.argv[1:])
+    makeMatrix()

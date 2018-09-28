@@ -1,18 +1,48 @@
+#!/usr/bin/env Rscript
+
 ## Usage: /opt/common/CentOS_6/R-3.2.0/bin/Rscript qc_images.R "pre='$PRE'" "bin='$BIN'" "path='$PATH_TO_METRICS'" "logfile='$LOGFILE'"
 
 #options(echo = FALSE)
+library("optparse")
+
+
+option_list = list(
+  make_option(c("--pre", type="character", default=NULL, help="project prefix")),
+  make_option(c("--path", type="character", default=".", help="Path containing metrics data")),
+  make_option(c("--logfile", type="character", default="qcPDF.log", help="log file of qcPDF run")),
+  make_option(c("--cov_warn_threshold", type="int")),
+  make_option(c("--cov_fail_threshold", type="int")),
+  make_option(c("--dup_rate_threshold", type="int")),
+  make_option(c("--minor_contam_threshold", type="float")),
+  make_option(c("--major_contam_threshold", type="float")),
+  make_option(c('--output_dir', type="character")),
+  make_option(c("--bin", type="character", help="location of R scripts"))
+)
+
 
 type = "exome"
 
-args=(commandArgs(TRUE))
-for(i in 1:length(args)){
-    eval(parse(text=args[i]))
-}
+#args=(commandArgs(TRUE))
+#for(i in 1:length(args)){
+#    eval(parse(text=args[i]))
+#}
 
-path = as.character(path)
 
-source(file.path(bin,"get_metrics_from_files.R"))
-source(file.path(bin,"plot_qc.R"))
+opt_parser = OptionParser(option_list=option_list)
+args = parse_args(opt_parser)
+pre=args$pre
+logfile=args$logfile
+cov_warn_threshold=args$cov_warn_threshold
+cov_fail_threshold=args$cov_fail_threshold
+dup_rate_threshold=args$dup_rate_threshold
+minor_contam_threshold=args$minor_contam_threshold
+major_contam_threshold=args$major_contam_threshold
+bin=args$bin
+
+path = as.character(args$path)
+
+source(paste(bin, "/get_metrics_from_files.R", sep=""))
+source(paste(bin,"/plot_qc.R", sep=""))
 
 print.image <- function(dat,metricType,sortOrder,plot.function,extras,square=FALSE){
     units = "in"
@@ -28,7 +58,7 @@ print.image <- function(dat,metricType,sortOrder,plot.function,extras,square=FAL
     if(!is.null(dat)){
         tryCatch({
                     #png(filename=paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".png",sep=""),type=type,units=units,width=width,height=height,res=res)
-                    pdf(file=paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".pdf",sep=""),width=width,height=height)
+                    pdf(file=paste(args$output_dir, pre,"_",sortOrder,"_",metricType,".pdf",sep=""),width=width,height=height)
                     print(plot.function(dat, extras))
                     #plot.function(dat)
                     dev.off()

@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
+import argparse
 import sys
 import re
 import os
@@ -57,31 +58,28 @@ def printMatrix(matrix,allSamps,rqualOutFile,oqualOutFile):
                 print>>oout,"\t".join([str(x) for x in [cycle]+[matrix[cycle]['oqual'][samp] for samp in allSamps]])
     return
 
-def makeMatrix(args):
+def makeMatrix():
     """
     Find files to parse, create one matrix of all counts and print 
     matrix to file
     """
 
-    if len(args) == 3:
-        fileoffiles,rqualOutFile,oqualOutFile = args
-    else:
-        usage()
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rqual_outfile", required=True)
+    parser.add_argument("--oqual_outfile", required=True)
+    parser.add_argument("--files", nargs="+", required=True)
+
+    args = parser.parse_args()
+
+    files = args.files
+    rqualOutFile = args.rqual_outfile
+    oqualOutFile = args.oqual_outfile
 
     ## store all values in an ordered dict, keyed by sample
     matrix = OrderedDict()
     allSamps = []
 
     ## find all cutadapt stats files using pattern 
-    files = []
-    fh = open(fileoffiles,"r")
-    while(1):
-        line = fh.readline()
-        if not line:
-            break
-        files.append(line.strip())
-
 
     if files:
         print>>sys.stderr, "\nCombining the following files:\n"
@@ -117,4 +115,4 @@ def makeMatrix(args):
         sys.exit(-1)
 
 if __name__ == '__main__':
-    makeMatrix(sys.argv[1:])
+    makeMatrix()
