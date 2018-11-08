@@ -89,7 +89,7 @@ if(!is.null(mnc)){ mnc.summary = get.mean.minor.allele.freq(type,dat=mnc) }
 ## print images
 extras = list(major_contam_fail=as.numeric(major_contam_threshold),
               minor_contam_fail=as.numeric(minor_contam_threshold),
-              minor_contam_warn=as.numeric(minor_contam_threshold)/2,
+              minor_contam_warn=0.02,
               cov_warn=as.numeric(cov_warn_threshold),
               cov_fail=as.numeric(cov_fail_threshold),
               #i guess the calculation uses "50" to mean 50% but the plot thinks i mean 5000 percent unless i do this
