@@ -21,11 +21,11 @@ def main():
         mflag = 0
         with open(f, 'rb') as current_file:
             for line in current_file:
-                line= line.strip()
+                line= line.rstrip("\r\n")
                 if line.find("## METRICS CLASS") != -1:
                     if mflag == 0:
                         mflag = 1
-                    header = current_file.next().strip()
+                    header = current_file.next().rstrip("\r\n")
                     if hflag == 0:
                         print(header)
                         hflag =1    
