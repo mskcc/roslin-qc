@@ -1,9 +1,10 @@
 from pylatex import Document, Section, Command, Figure, NewPage, Tabular, LongTabu, MultiColumn, MultiRow, Table
 from pylatex.package import Package
 from pylatex.utils import NoEscape, bold, escape_latex
+from pylatex.basic import MediumText
 import glob,os
 import pandas as pd
-
+import fnmatch
 def colorcellStatus(autostatus,colortext):
     if colortext == 'color':
         cellstr = ''
@@ -17,11 +18,27 @@ def colorcellStatus(autostatus,colortext):
     elif autostatus.upper() == 'WARN':
         return NoEscape(r'\cellcolor{yellow}'+cellstr)
 
+
+def find_files(directory, pattern='*'):
+    if not os.path.exists(directory):
+        raise ValueError("Directory not found {}".format(directory))
+
+    matches = []
+    for root, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            full_path = os.path.join(root, filename)
+            if fnmatch.filter([full_path], pattern):
+                matches.append(os.path.join(root, filename))
+    return matches
+
+
 if __name__ == '__main__':
-    projfile = 'files/Proj_06208_G_ProjectSummary.txt'
-    samplefile = 'files/Proj_06208_G_SampleSummary.txt'
-    proj = escape_latex(r'Proj_06208_G')
-    geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm"}
+
+    proj =  escape_latex(r'Proj_06208_C')
+    projfile = 'Proj_06208_C_ProjectSummary.txt'
+    samplefile = 'Proj_06208_C_SampleSummary.txt'
+    pdfpath = 'images/'
+    geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm", "includeheadfoot":True}
     doc = Document(geometry_options=geometry_options)
     doc.documentclass = Command(
         'documentclass',
@@ -29,6 +46,8 @@ if __name__ == '__main__':
         lmodern=False,
         arguments=['article'],
     )
+
+    #LOADING PACKAGES
     doc.preamble.append(NoEscape(r'\hypersetup{'
                         r'colorlinks=true,'
                         r'linkcolor=blue,'
@@ -36,51 +55,56 @@ if __name__ == '__main__':
                         r'citecolor=blue,'
                         r'filecolor=blue,'
                         r'urlcolor=blue,}'))
-    #LOADING PACKAGES
+    # doc.preamble.append(Command('usepackage', 'helvet'))
+
     doc.packages.append(Package('hyperref'))
     doc.packages.append(Package('csvsimple'))
     doc.packages.append(Package('colortbl'))
-    doc.packages.append(Package('tgheros'))
+    doc.packages.append(Package('helvet'))
     doc.packages.append(Package('caption'))
+    doc.append(NoEscape(r'\renewcommand{\familydefault}{\sfdefault}'))
+
+
+############ TITLE PAGE
     doc.append(NoEscape(r'\captionsetup{labelsep=period}'))
-
-
-
     doc.append(NoEscape(r'\begin{titlepage}'))
     doc.append(NoEscape(r'\begin{center}'))
     doc.append(NoEscape(r'\vspace{1cm}'))
     doc.append(NoEscape(r'\Large'))
     doc.append(NoEscape(r'\textbf{Memorial Sloan Kettering Cancer Center Center for Molecular Oncology}\\'))
-
     doc.append(NoEscape(r'\vspace{5.5cm}'))
     doc.append(NoEscape(r'\LARGE'))
-    doc.append(NoEscape(r'\textbf{Project %s}\\' % proj))
+    doc.append(NoEscape(r'\textbf{Project %s}\\' % proj ))
     doc.append(NoEscape(r'\textbf{QC Metrics Report}\\'))
     doc.append(NoEscape(r'\vspace{1.5cm}'))
     # doc.append(NoEscape(r'\textbf{Author Name}\\'))
     doc.append(NoEscape(r'\vfill'))
     doc.append(NoEscape(r'\end{center}'))
     doc.append(NoEscape(r'\end{titlepage}'))
-
-
-
- 
-    #    \vfill
- 
-    #    A thesis presented for the degree of\\
-    #    Doctor of Philosophy
- 
-    #    \vspace{0.8cm}
- 
-    #    \includegraphics[width=0.4\textwidth]{university}
- 
-    #    Department Name\\
-    #    University Name\\
-    #    Country\\
-    #    Date
-
     doc.append(NewPage())
 
+    #TABLE OF CONTENTS
+    # doc.append(NoEscape(r'\large'))
+    doc.append(NoEscape(r'\hypertarget{toc}{}'))
+    # doc.append(NoEscape(r'\tableofcontents'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {1}Estimated Library Size}{}{section.1}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {2}Major Contamination Check}{}{section.2}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {3}Capture Specificity}{}{section.3}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {4}Percentage of Reads Trimmed}{}{section.4}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {5}Capture Specificity}{}{section.5}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {6}Cluster Density \& Alignment Rate}{}{section.6}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {7}Insert Size Distribution}{}{section.7}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {8}Peak Insert Size Values}{}{section.8}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {9}Normalized Coverage vs GC-Content}{}{section.9}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {10}Mean Target Coverage}{}{section.10}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {11}Cluster Density \& Alignment Rate}{}{section.11}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {12}Estimated Duplication Rate}{}{section.12}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {13}Minor Contamination Check}{}{section.13}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {14}Pre \& Post-Recalibration Quality Scores}{}{section.14}'))
+    doc.append(NoEscape(r'\contentsline {section}{\numberline {15}Sample Mix-Ups}{}{section.15}'))
+    doc.append(NewPage())
+
+###### PROJECT SUMMARY
     doc.append(NoEscape(r'\footnotesize'))
     projdf = pd.read_csv(projfile, sep='\t')
     projdf = projdf.replace(pd.np.nan,'',regex=True)
@@ -90,7 +114,7 @@ if __name__ == '__main__':
     with doc.create(LongTabu("|c|l|c|X[p]|c|X[m]|", row_height=1.5)) as data_table:
         header_row1 = ["AutoStatus", "Metric", "Category", "Summary Description", "Summary Value", "Failures"]
         data_table.add_hline()
-        data_table.add_row(header_row1,mapper=bold)
+        data_table.add_row(header_row1, mapper=[bold])
         data_table.add_hline()
 
         for index, row in projdf.iterrows():
@@ -160,17 +184,27 @@ if __name__ == '__main__':
                 prow = row.tolist()
                 data_table.add_row((MultiRow(NoEscape(-3), data=colorcellStatus(prow[0], 'text')), MultiRow(3, data=''), prow[2], prow[3], prow[4], prow[5]))
                 data_table.add_hline()
-
     doc.append(NewPage())
 
-    # with doc.create(LongTabu("|X[c]|X[c]|X[p]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", row_height=1.5)) as data_table:
-    with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|m{1cm}|", row_height=2.5)) as data_table:
-        header_row1 = ["Status","Sample","Unexpected Match","Unexpected Mismatch","Major Contam.","Minor Contam.","Coverage","Duplication","Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak","% Trimmed Reads"]
-        data_table.add_hline()
+###### SAMPLE SUMMARY
+    with doc.create(LongTabu("|X[c]|X[2,c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", row_height=1.5)) as data_table:
+    # with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|m{1cm}|", row_height=2.5)) as data_table:
+        header_row1 = ["Status","Sample","Unexpect. Match","Unexpect. Mismatch","Major Contam.","Minor Contam.","Coverage","Duplic.","Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak","% Trimmed Reads"]
         # doc.append(NoEscape(r'\rowfont{\tiny}'))
+
+        data_table.add_hline()
         data_table.add_row(header_row1, mapper=bold)
         data_table.add_hline()
-
+        data_table.end_table_header()
+        data_table.add_hline()
+        # data_table.add_row((MultiColumn(13, align='r', data='Containued on Next Page'),))
+        # data_table.add_hline()
+        # data_table.end_table_footer()
+        # data_table.add_hline()
+        # data_table.add_row((MultiColumn(13, align='r',data='Not Containued on Next Page'),))
+        # data_table.add_hline()
+        data_table.end_table_last_footer()
+ 
         for index, row in sampdf.iterrows():
             # if row['Metric'] == 'Cluster Density':
             # if index == 0:  # Cluster Density
@@ -184,41 +218,14 @@ if __name__ == '__main__':
                 # data_table.add_row(prow)
                 data_table.add_row((MultiRow(1, data=colorcellStatus(prow[0], 'text')), prow[1], prow[2], prow[3], prow[4], prow[5], prow[6], prow[7], prow[8], prow[9], prow[10], prow[11], prow[12]))
                 data_table.add_hline()
-        # data_table.add_hline(2, 3)
-        # data_table.add_row(('', 3, 4))
-        # data_table.add_hline(2, 3)
-        # data_table.add_row(('', 5, 6))
-        # data_table.add_hline()
-        # data_table.add_row((MultiRow(3, data='Multirow2'), '', ''))
-        # data_table.add_empty_row()
-        # data_table.add_empty_row()
-        # data_table.add_hline()
-
-        # data_table.append(NoEscape(r'\csvreader[separator=tab, head to column names]{'+projfile+'}{}'))
-        # data_table.append(NoEscape(r'{\\\AutoStatus & \Metric & \Category & \SummaryDescription & \SummaryValue & \Failures}'))
-        # data_table.append(NoEscape(r'\\\hline'))
-        # data_table.append(NoEscape(r'\rhi'))
-        # data_table.append(NoEscape(r'\rhi'))
-
-    # doc.append(NoEscape(r'\begin{table}'))
-    # doc.append(NoEscape(r'\csvloop{'
-    #             r'file=files/Proj_DEV_0003_ProjectSummary.txt,'
-    #             r'separator=tab}'))
-    # doc.append(NoEscape(r'\end{table}'))
-
-
     doc.append(NewPage())
 
-    doc.append(NoEscape(r'\large'))
-    doc.append(NoEscape(r'\hypertarget{toc}{}'))
-    doc.append(NoEscape(r'\tableofcontents'))
-    doc.append(NewPage())
-    
+
+
+
     doc.append(NoEscape(r'\normalsize'))
-    path = 'images'
-    #this will be tied to qc_summary.R
-    scalewidth = NoEscape(r'.91\textwidth')
-    for pdfimg in glob.glob(os.path.join(path, '*.pdf')):
+    scalewidth = NoEscape(r'.81\textwidth')
+    for pdfimg in glob.glob(os.path.join(pdfpath, 'Proj*.pdf')):
         if pdfimg.endswith('_alignment.pdf'):
             doc.append(NoEscape(r'\section{Cluster Density \& Alignment Rate}'))
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
@@ -239,7 +246,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_capture_specificity.pdf'):
             doc.append(NoEscape(r'\section{Capture Specificity}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg,width=scalewidth)
                 pctonnearbait = str(projdf['SummaryValue'][3])
@@ -249,7 +256,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_capture_specificity_percentage.pdf'):
             doc.append(NoEscape(r'\section{Capture Specificity}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg,width=scalewidth)
                 pctonnearbait = str(projdf['SummaryValue'][3])
@@ -259,14 +266,14 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_insert_size.pdf'):
             doc.append(NoEscape(r'\section{Insert Size Distribution}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption('Insert Size Distribution')
             doc.append(NewPage())
         elif pdfimg.endswith('_insert_size_peaks.pdf'):
             doc.append(NoEscape(r'\section{Peak Insert Size Values}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 avgpeak = str(projdf['SummaryValue'][7])
@@ -274,14 +281,14 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_fingerprint.pdf'):
             doc.append(NoEscape(r'\section{Sample Mix-Ups}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption(NoEscape(r'Sample Mixups: The value below the key refers to the fraction of discordant homozygous alleles. A low score between unrelated samples is a red flag.'))
             doc.append(NewPage())
         elif pdfimg.endswith('_major_contamination.pdf'):
             doc.append(NoEscape(r'\section{Major Contamination Check}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 majcontam = str(projdf['SummaryValue'][10])
@@ -289,7 +296,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_minor_contamination.pdf'):
             doc.append(NoEscape(r'\section{Minor Contamination Check}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 mincontam = str(projdf['SummaryValue'][11])
@@ -297,7 +304,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_duplication.pdf'):
             doc.append(NoEscape(r'\section{Estimated Duplication Rate}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 duprate = str(projdf['SummaryValue'][13])
@@ -305,7 +312,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_library_size.pdf'):
             doc.append(NoEscape(r'\section{Estimated Library Size}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 libsize = str(projdf['SummaryValue'][14])
@@ -313,7 +320,7 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_coverage.pdf'):
             doc.append(NoEscape(r'\section{Mean Target Coverage}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 cover = str(projdf['SummaryValue'][15])
@@ -321,28 +328,29 @@ if __name__ == '__main__':
             doc.append(NewPage())
         elif pdfimg.endswith('_trimmed_reads.pdf'):
             doc.append(NoEscape(r'\section{Percentage of Reads Trimmed}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption(NoEscape(r'Percent trimmed reads'))
             doc.append(NewPage())
         elif pdfimg.endswith('_base_qualities.pdf'):
             doc.append(NoEscape(r'\section{Pre \& Post-Recalibration Quality Scores}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption(NoEscape(r'Base Qualities'))
             doc.append(NewPage())
         elif pdfimg.endswith('_gc_bias.pdf'):
             doc.append(NoEscape(r'\section{Normalized Coverage vs GC-Content}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption(NoEscape(r'GC Content'))
             doc.append(NewPage())
         else:
+            # pass
             doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
-            doc.append(NoEscape('Go to \hyperlink{toc}{TOC}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg,width=scalewidth)
                 qc_fig.add_caption('Look it\'s on its back')
