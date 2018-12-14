@@ -5,6 +5,8 @@ from pylatex.basic import MediumText
 import glob,os
 import pandas as pd
 import fnmatch
+import argparse
+
 def colorcellStatus(autostatus,colortext):
     if colortext == 'color':
         cellstr = ''
@@ -34,10 +36,16 @@ def find_files(directory, pattern='*'):
 
 if __name__ == '__main__':
 
-    proj =  escape_latex(r'Proj_06208_C')
-    projfile = 'Proj_06208_C_ProjectSummary.txt'
-    samplefile = 'Proj_06208_C_SampleSummary.txt'
-    pdfpath = 'images/'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--proj_prefix", required=True)
+    parser.add_argument("--summary_proj", required=True)
+    parser.add_argument("--summary_sample", required=True)
+    parser.add_argument("--pdfpath", required=True, help="Directory containing paths; typically called '/images'")
+
+    proj =  escape_latex(ars.proj_prefix)
+    projfile = args.summary_proj
+    samplefile = args.summary_sample
+    pdfpath = args.pdfpath
     geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm", "includeheadfoot":True}
     doc = Document(geometry_options=geometry_options)
     doc.documentclass = Command(
@@ -249,7 +257,7 @@ if __name__ == '__main__':
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             with doc.create(Figure(position='h!')) as qc_fig:
                 qc_fig.add_image(pdfimg,width=scalewidth)
-                pctonnearbait = str(projdf['SummaryValue'][3])
+                pctonnearbait = str(projdf['SummaryValue'][4])
                 pctonbait = str(projdf['SummaryValue'][4])
                 pctontarget = str(projdf['SummaryValue'][5])
                 qc_fig.add_caption(NoEscape(r'Capture Specificity: Average \%% selected on/near bait = %s\%%. Average \%% on bait = %s\%%. Average \%% of usable bases on target = %s\%%' % (pctonnearbait, pctonbait, pctontarget)))
