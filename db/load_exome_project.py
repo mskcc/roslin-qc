@@ -1,4 +1,4 @@
-#!/opt/common/python/python-2.7.6/bin/python
+#!/usr/bin/env python
 # load_project.py project_id project_dir
 #
 # e.g. ./load_project.py 4773 /ifs/res/seq/faginj/knaufj/Proj_4773/

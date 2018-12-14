@@ -1,4 +1,4 @@
-#!/opt/common/python/python-2.7.6/bin/python
+#!/usr/bin/env python
 # load_samples.py Proj_*_title.txt
 #
 # This takes the Proj_*_title.txt file and loads it into MySQL.

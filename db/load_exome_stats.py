@@ -1,4 +1,4 @@
-#!/opt/common/python/python-2.7.6/bin/python
+#!/usr/bin/env python
 # load_stats.py STAT_TYPE PROJECT_ID INPUT_FILE
 # TODO passing the queries around etc. is silly
 
