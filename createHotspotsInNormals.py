@@ -68,6 +68,6 @@ if __name__ == '__main__':
             subsetdf['counts'] = subsetdf['t_alt_count'].astype(str) + '/' + subsetdf['t_depth'].astype(str)
             if counter == 0:
                 counter+=1
-                subsetdf.to_csv('%s_HotspotsInNormals.txt', index=False, sep='\t')
+                subsetdf.to_csv('%s_HotspotsInNormals.txt' % args.project_prefix, index=False, sep='\t')
             else:
-                subsetdf.to_csv('%s_HotspotsInNormals.txt', mode='a', header=False, index=False, sep='\t')
+                subsetdf.to_csv('%s_HotspotsInNormals.txt' % args.project_prefix, mode='a', header=False, index=False, sep='\t')
