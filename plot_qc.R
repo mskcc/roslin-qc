@@ -263,7 +263,7 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
     if(is.null(density)){ return(NULL) }
     x=density[,c("BothAlign","OneAlign","NeitherAlign")]
     both.per <- density$BothAlign/apply(x,1,sum)
-    both.order <- order(-both.per)
+    both.order <- order(unique(-both.per))
     density.m <- melt(density)
     density.m$value <- density.m$value/1000000
     density.m2 <- ddply(density.m, .(Samples), mutate, perc = value/sum(value))
