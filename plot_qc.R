@@ -440,7 +440,6 @@ plot.gc.bias <- function(gc.bias, extras){
     #    ylab("Normalized Coverage") +
     #    scale_color_manual(name="Samples", values = rep(c48, 34)) +
     #    guides(colour = guide_legend(override.aes = list(size=5), ncol=ceiling(ncol(gc.bias)/40)))
-
     ggplot(data=gc.bias,aes(x=gc,y=normcoverage,color=sample)) + geom_line() +
     xlab("GC Content") +
     ylab("Normalized Coverage") +
@@ -449,7 +448,19 @@ plot.gc.bias <- function(gc.bias, extras){
     theme(legend.position="right") +
     # scale_color_manual(name="Samples", values = rep(c48, 34)) +
     guides(colour = guide_legend(override.aes = list(size=2),ncol=1))
-
-
 }
 
+plot.hs.in.normals <- function(hs.in.normals, extras){
+    if(is.null(hs.in.normals)){ return(NULL) }
+    p <- ggplot(hs.in.normals,aes(y=t_variant_frequency,x=geneaa,label=counts)) +
+    geom_point(aes(color=tn),alpha=0.7) +
+    facet_wrap( ~ root,scales='free',nrow=2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    geom_hline(yintercept=0.02,color='#ca0020',size=0.5,linetype="dashed") +
+    scale_y_continuous(labels = percent) +
+    scale_color_brewer(palette='Set1') +
+    ylab("VAF") +
+    xlab("Hotspots") +
+    labs(title="Hotspots in Normals") +
+    geom_text(nudge_y = .005, aes(color=tn))
+}
