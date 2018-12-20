@@ -69,9 +69,9 @@ plot.major.contamination <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     colnames(dat) = c("Sample","PerHeterozygousPos") ## colnames are different between exome and dmp pipelines
     if(sort.by == 'badToGood'){
-       dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(dat$PerHeterozygousPos)])
+       dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(unique(dat$PerHeterozygousPos))])
     } else if(sort.by == 'name'){
-        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(dat$Sample)])
+        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(unique(dat$Sample))])
     }
 
     ggplot(dat, aes(x = Sample, y = PerHeterozygousPos)) +
@@ -91,9 +91,9 @@ plot.major.contamination <- function(dat,extras,sort.by='name'){
 plot.minor.contamination <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     if(sort.by == 'badToGood'){
-        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(dat$AvgMinorHomFreq)])
+        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(unique(dat$AvgMinorHomFreq))])
     } else if(sort.by == 'name'){
-        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(dat$Sample)])
+        dat$Sample <- factor(dat$Sample, levels=dat$Sample[order(unique(dat$Sample))])
     }
 
     maximum<-1.5*(as.numeric(max(dat$AvgMinorHomFreq, na.rm=TRUE)))
@@ -117,9 +117,9 @@ plot.minor.contamination <- function(dat,extras,sort.by='name'){
 plot.coverage <- function(dat,extras,sort.by='name'){
     if(is.null(dat)){ return(NULL) }
     if(sort.by == "badToGood"){
-        dat$Samples = factor(dat$Samples, levels=dat$Samples[order(-dat$Cov)])
+        dat$Samples = factor(dat$Samples, levels=dat$Samples[order(unique(-dat$Cov))])
     } else if(sort.by == "name"){
-        dat$Samples = factor(dat$Samples, levels=dat$Samples[order(dat$Samples)])
+        dat$Samples = factor(dat$Samples, levels=dat$Samples[order(unique(dat$Samples))])
     }
     ggplot(dat, aes(x = Samples,y = Cov)) +
        geom_bar(stat = "identity") +
@@ -139,9 +139,9 @@ plot.coverage <- function(dat,extras,sort.by='name'){
 plot.duplication <- function(duplication,extras,sort.by='name'){
     if(is.null(duplication)){ return(NULL) }
     if(sort.by == 'badToGood'){
-        duplication$Samples <- factor(duplication$Samples, levels=duplication$Samples[order(duplication$DupRate)])
+        duplication$Samples <- factor(duplication$Samples, levels=duplication$Samples[order(unique(duplication$DupRate))])
     } else if(sort.by == 'name'){
-        duplication$Samples <- factor(duplication$Samples, levels=duplication$Samples[order(duplication$Samples)])
+        duplication$Samples <- factor(duplication$Samples, levels=duplication$Samples[order(unique(duplication$Samples))])
     }
     ggplot(duplication, aes(x = Samples, y = DupRate)) +
         geom_bar(stat = "identity") +
@@ -161,9 +161,9 @@ plot.duplication <- function(duplication,extras,sort.by='name'){
 plot.library.size <- function(librarySize,extras,sort.by='name'){
     if(is.null(librarySize)) { return(NULL) }
     if(sort.by == 'badToGood'){
-        librarySize$Samples <- factor(librarySize$Samples, levels=librarySize$Samples[order(-librarySize$Comp)])
+        librarySize$Samples <- factor(librarySize$Samples, levels=librarySize$Samples[order(unique(-librarySize$Comp))])
     } else if(sort.by == 'name'){
-        librarySize$Samples <- factor(librarySize$Samples, levels=librarySize$Samples[order(librarySize$Samples)])
+        librarySize$Samples <- factor(librarySize$Samples, levels=librarySize$Samples[order(unique(librarySize$Samples))])
     }
     ggplot(librarySize, aes(x = Samples, y = Comp/1000000)) +
         geom_bar(stat = "identity") +
@@ -183,9 +183,9 @@ plot.capture.specificity <- function(captureSpecificity,extras,sort.by='name'){
     cs.m = melt(captureSpecificity, id.vars="Sample")
 
     if(sort.by == 'badToGood'){
-        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(-cs.m$value)])
+        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(unique(-cs.m$value))])
     } else if(sort.by == 'name'){
-        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(cs.m$Sample)])
+        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(unique(cs.m$Sample))])
     }
     ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = factor(variable,levels=c('OffBait','NearBait','OnBait')) )) +
        geom_bar(stat="identity", width=0.7, color="black") +
@@ -213,7 +213,7 @@ plot.capture.specificity.percentage <- function(captureSpecificity,extras,sort.b
     if(sort.by == 'badToGood'){
         cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[on.bait.order])
     } else if(sort.by == 'name'){
-        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(cs.m$Sample)])
+        cs.m$Sample <- factor(cs.m$Sample, levels=cs.m$Sample[order(unique(cs.m$Sample))])
     }
 
     ggplot(cs.m, aes(x = Sample, y = value/1000000, fill = factor(variable,levels=c('OffBait','NearBait','OnBait')) )) +
@@ -237,9 +237,9 @@ plot.alignment <- function(alignment,extras,sort.by='name'){
     density.m$value <- density.m$value/1000000
 
     if(sort.by == 'badToGood'){
-        density.m$Samples <- factor(density.m$Samples, levels=density.m$Samples[order(-density.m$value)])
+        density.m$Samples <- factor(density.m$Samples, levels=density.m$Samples[order(unique(-density.m$value))])
     } else if(sort.by == 'name'){
-        density.m$Samples <- factor(density.m$Samples, levels=density.m$Samples[order(density.m$Samples)])
+        density.m$Samples <- factor(density.m$Samples, levels=density.m$Samples[order(unique(density.m$Samples))])
     }
 
     ggplot(density.m, aes(x = Samples, y = value, fill = factor(variable, levels=c("NeitherAlign","OneAlign","BothAlign")) ) ) +
@@ -276,7 +276,7 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
     if(sort.by == 'badToGood'){
         density.m2$Samples <- factor(density.m2$Samples, levels=density.m$Samples[both.order])
     } else if(sort.by == 'name'){
-        density.m2$Samples <- factor(density.m2$Samples, levels=density.m2$Samples[order(density.m2$Samples)])
+        density.m2$Samples <- factor(density.m2$Samples, levels=density.m2$Samples[order(unique(density.m2$Samples))])
     }
 
     # Need to order factors correctly since we are clipping the bar charge.
@@ -362,9 +362,9 @@ plot.trimmed.reads <- function(reads,extras,sort.by='name'){
     reads.m$value <- reads.m$value/100
 
     if(sort.by == 'badToGood'){
-        reads.m$Samples <- factor(reads.m$Samples, levels=reads.m$Samples[order(reads.m$value)])
+        reads.m$Samples <- factor(reads.m$Samples, levels=reads.m$Samples[order(unique(reads.m$value))])
     } else if(sort.by == 'name'){
-        reads.m$Samples <- factor(reads.m$Samples, levels=reads.m$Samples[order(reads.m$Samples)])
+        reads.m$Samples <- factor(reads.m$Samples, levels=reads.m$Samples[order(unique(reads.m$Samples))])
     }
 
 
