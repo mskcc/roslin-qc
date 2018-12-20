@@ -569,7 +569,14 @@ get.gc.bias <- function(path,type){
     # return(dat)
 }
 
-
+get.hs.in.normals <- function(path,type){
+    dat = NULL
+    filename = dir(path)[grep("_HotspotsInNormals.txt",dir(path))]
+    if(length(filename) == 0) { return(NULL) }
+    file = paste(path,filename,sep="/")
+    dat <- read.delim(file,header=T,sep="\t",check.names=FALSE)
+    return(dat)
+}
 
 get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold, low_cov_fail_threshold, minor_contam_fail_threshold, major_contam_fail_threshold, user=NULL){
     mets = c("Unexpected Match(es)",

@@ -97,6 +97,7 @@ mjc = get.major.contamination(path,type)
 mnc = get.minor.contamination(path,type)
 #cc = get.cdna.contamination(path,type)
 gc = get.gc.bias(path,type)
+hn = get.hs.in.normals(path,type)
 
 is.summary = NULL
 dp.summary = NULL
@@ -142,6 +143,7 @@ print.image(cv,"coverage","13",plot.coverage,extras)
 print.image(tr,"trimmed_reads","14",plot.trimmed.reads,extras) 
 print.image(bq,"base_qualities","15",plot.base.qualities,extras) 
 print.image(gc,"gc_bias","16",plot.gc.bias,extras) #,square=TRUE)
+print.image(hn,"hotspots_in_normals","17",plot.hs.in.normals,extras) #,square=TRUE)
 
 ## write sample level summary table
 tryCatch({
