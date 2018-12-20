@@ -274,9 +274,9 @@ plot.alignment.percentage <- function(alignment,extras,sort.by='name'){
     y <- floor(40*y)/40
 
     if(sort.by == 'badToGood'){
-        density.m2$Samples <- factor(density.m2$Samples, levels=density.m$Samples[both.order])
+        density.m2$Samples <- factor(density.m2$Samples, levels=density.m2$Samples[both.order])
     } else if(sort.by == 'name'){
-        density.m2$Samples <- factor(density.m2$Samples, levels=density.m2$Samples[order(unique(density.m2$Samples))])
+        density.m2$Samples <- factor(density.m2$Samples, levels=unique(density.m2$Samples[order(density.m2$Samples)])) #verify this is working as intended
     }
 
     # Need to order factors correctly since we are clipping the bar charge.
