@@ -4,6 +4,7 @@ library(gplots)
 library(scales)
 library(reshape)
 library(plyr)
+library(ggforce)
 
 library(RColorBrewer)
 
@@ -450,17 +451,42 @@ plot.gc.bias <- function(gc.bias, extras){
     guides(colour = guide_legend(override.aes = list(size=2),ncol=1))
 }
 
-plot.hs.in.normals <- function(hs.in.normals, extras){
+plot.hs.in.normals <- function(hs.in.normals, extras, filename){
     if(is.null(hs.in.normals)){ return(NULL) }
-    p <- ggplot(hs.in.normals,aes(y=t_variant_frequency,x=geneaa,label=counts)) +
-    geom_point(aes(color=tn),alpha=0.7) +
-    facet_wrap( ~ root,scales='free',nrow=2) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-    geom_hline(yintercept=0.02,color='#ca0020',size=0.5,linetype="dashed") +
-    scale_y_continuous(labels = percent) +
-    scale_color_brewer(palette='Set1') +
-    ylab("VAF") +
-    xlab("Hotspots") +
-    labs(title="Hotspots in Normals") +
-    geom_text(nudge_y = .005, aes(color=tn))
+    cols = c('tumor'='#238b45','normal'='#0570b0')
+    hs.in.normals$geneaa = reorder(hs.in.normals$geneaa, ifelse(hs.in.normals$tn == "normal", -hs.in.normals$t_variant_frequency, NA), na.rm = TRUE)
+    pdf(filename, paper = "special", width=11, height=8.5)
+    pagesneeded<-ceiling( length(unique(hs.in.normals$root))/12 )
+    for(i in 1:pagesneeded){
+        p <- ggplot(hs.in.normals,aes(y=t_variant_frequency,x=geneaa,label=counts)) +
+        geom_point(aes(color=tn)) +
+        facet_wrap_paginate( ~ root,scales='free',nrow=3,ncol=4,page=1) +
+        theme(text = element_text(size=8),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+        geom_hline(yintercept=0.02,color='#ca0020',size=0.5,linetype="dashed") +
+        scale_y_continuous(labels = percent) +
+        scale_color_manual(values=cols) +
+        ylab("VAF") +
+        xlab("Hotspots") +
+        labs(title="Hotspots in Normals") +
+        geom_text(nudge_y = .005, aes(color=tn),size=2)
+        print(p)
+    }
+    dev.off()
+}
+
+plot.mc.freq.hist <- function(mc.freq.hist, extras, filename){
+    if(is.null(mc.freq.hist)){ return(NULL) }
+    pdf(filename, paper = "special", width=11, height=8.5)
+    pagesneeded<-ceiling( length(unique(mc.freq.hist$sample))/12 )
+    for(i in 1:pagesneeded){
+    p <- ggplot(mc.freq.hist,aes(value)) +
+    geom_histogram(binwidth=0.002,fill='#0571b0') +
+    facet_wrap( ~ sample,nrow=3,ncol=4) +
+    xlim(0,.10) +
+    geom_vline(xintercept=0.02,color='#f4a582',size=1) +
+    geom_vline(xintercept=0.05,color='#ca0020',size=1) +
+    scale_x_continuous(labels = percent)
+    print(p)
+    }
+    dev.off()
 }

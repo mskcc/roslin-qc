@@ -74,6 +74,33 @@ print.image <- function(dat,metricType,sortOrder,plot.function,extras,square=FAL
         no.fails = FALSE
     }
 }
+print.specialimage <- function(dat,metricType,sortOrder,plot.function,extras,square=FALSE){
+    units = "in"
+    width = 11
+    height = 7
+    res = 600
+    type = "cairo"
+    if(square == TRUE){
+        width = 5
+        height = 5
+    }
+
+    if(!is.null(dat)){
+        tryCatch({
+                    filename<-paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".png",sep="")
+                    plot.function(dat, extras, filename )
+                 },
+          error = function(e){
+            cat(paste("ERROR: could not write ",metricType," image\n",sep=""), file=logfile, append=TRUE)
+            cat(paste(e,"\n"),file=logfile,append=TRUE)
+            no.fails = FALSE
+          }
+        )
+    } else {
+        cat(paste("ERROR: could not get ",metricType," metrics\n",sep=""),file=logfile, append=TRUE)
+        no.fails = FALSE
+    }
+}
 
 cat(paste(date(),"\n"),file=logfile, append=TRUE)
 cat(paste(args,"\n"),file=logfile, append=TRUE)
@@ -98,6 +125,7 @@ mnc = get.minor.contamination(path,type)
 #cc = get.cdna.contamination(path,type)
 gc = get.gc.bias(path,type)
 hn = get.hs.in.normals(path,type)
+mcfh = get.mc.freq.hist(path,type)
 
 is.summary = NULL
 dp.summary = NULL
@@ -143,8 +171,9 @@ print.image(cv,"coverage","13",plot.coverage,extras)
 print.image(tr,"trimmed_reads","14",plot.trimmed.reads,extras) 
 print.image(bq,"base_qualities","15",plot.base.qualities,extras) 
 print.image(gc,"gc_bias","16",plot.gc.bias,extras) #,square=TRUE)
-print.image(hn,"hotspots_in_normals","17",plot.hs.in.normals,extras) #,square=TRUE)
-
+# print.image(hn,"hotspots_in_normals","17",plot.hs.in.normals,extras) #,square=TRUE)
+print.specialimage(hn,"hotspots_in_normals","17",plot.hs.in.normals,extras)
+print.specialimage(mcfh,"minor_contam_freq_hist","18",plot.mc.freq.hist,extras)
 ## write sample level summary table
 tryCatch({
     #args come from command line ##charris

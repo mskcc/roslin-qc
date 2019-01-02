@@ -17,8 +17,12 @@ if __name__ == '__main__':
     fp = pd.read_csv(args.fpsummary, sep='\t')
     bigdf = pd.DataFrame()
     for sample in mcSampleList:
-        subsetdf = fp[(fp[sample+'_MinorAlleleFreq'] > 0.0) & (fp[sample+'_MinorAlleleFreq'] <= 0.1)][[sample+'_Genotypes', sample+'_MinorAlleleFreq']]
+        subsetdf = fp[(fp[sample+'_MinorAlleleFreq'] > 0.0) & (fp[sample+'_MinorAlleleFreq'] <= 0.1)][[sample+'_Genotypes', sample+'_MinorAlleleFreq',sample+'_Counts']] #added >=
+        # df['vartype'] = df['variant_id'].apply(lambda x: x[0:3])
         subsetdf['sample'] = sample
+        # subsetdf['newcounts'] = subsetdf[sample+'_Counts'].apply(lambda x: int(x.split(' ')[0].split(':')[1]) + int(x.split(' ')[1].split(':')[1]))
+        # subsetdf = subsetdf.loc[subsetdf['newcounts'] >= 100]  # make sure each variant_id has two instances
+
         subsetdf = subsetdf[['sample',sample+'_MinorAlleleFreq']]
         subsetdf.columns = ['sample','value']
         bigdf = pd.concat([bigdf,subsetdf],axis=0)
