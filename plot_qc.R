@@ -468,7 +468,8 @@ plot.hs.in.normals <- function(hs.in.normals, extras, filename){
         ylab("VAF") +
         xlab("Hotspots") +
         labs(title="Hotspots in Normals") +
-        geom_text(nudge_y = .005, aes(color=tn),size=2)
+        geom_text(nudge_y = .005, aes(color=tn),size=2) +
+        geom_text(data=unique(hs.in.normals[,c('root','total_hs_counts')]),mapping=aes(x=Inf,y=Inf,label=total_hs_counts),size=4.5,hjust=1.05,vjust=1.5)
         print(p)
     }
     dev.off()

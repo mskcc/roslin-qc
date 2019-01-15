@@ -45,6 +45,7 @@ if __name__ == '__main__':
             subsetdf['t_variant_frequency'] = subsetdf['t_alt_count']/subsetdf['t_depth']
             normal_only = subsetdf.loc[subsetdf['tn'] == 'normal']
             normal_only = normal_only.loc[(normal_only['t_variant_frequency'] >= 0.02) & (normal_only['t_depth'] >= 20) & (normal_only['t_alt_count'] > 2)]  # inlcude normal alt depth > 2
+            total_hs_counts = normal_only['root'].value_counts()
             norm_top10 = normal_only.sort_values('t_variant_frequency', ascending=False).groupby('Tumor_Sample_Barcode').head(10)
 
             shortlist = ['Hugo_Symbol',
@@ -68,6 +69,7 @@ if __name__ == '__main__':
             subsetdf.loc[subsetdf['t_depth'] < 20, 't_variant_frequency'] = 0
             subsetdf = subsetdf[shortlist]
             subsetdf['counts'] = subsetdf['t_alt_count'].astype(str) + '/' + subsetdf['t_depth'].astype(str)
+            subsetdf['total_hs_counts'] = int(total_hs_counts)
             if counter == 0:
                 counter+=1
                 subsetdf.to_csv('%s_HotspotsInNormals.txt' % args.project_prefix, index=False, sep='\t')

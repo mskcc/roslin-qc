@@ -70,6 +70,7 @@ if __name__ == '__main__':
     doc.packages.append(Package('colortbl'))
     doc.packages.append(Package('helvet'))
     doc.packages.append(Package('caption'))
+    doc.packages.append(Package('pdfpages'))
     doc.append(NoEscape(r'\renewcommand{\familydefault}{\sfdefault}'))
 
 
@@ -233,6 +234,7 @@ if __name__ == '__main__':
 
     doc.append(NoEscape(r'\normalsize'))
     scalewidth = NoEscape(r'.81\textwidth')
+    smallscalewidth = NoEscape(r'.7\textwidth')
     for pdfimg in glob.glob(os.path.join(pdfpath, 'Proj*.pdf')):
         if pdfimg.endswith('_alignment.pdf'):
             doc.append(NoEscape(r'\section{Cluster Density \& Alignment Rate}'))
@@ -262,6 +264,16 @@ if __name__ == '__main__':
                 pctontarget = str(projdf['SummaryValue'][5])
                 qc_fig.add_caption(NoEscape(r'Capture Specificity: Average \%% selected on/near bait = %s\%%. Average \%% on bait = %s\%%. Average \%% of usable bases on target = %s\%%' % (pctonnearbait, pctonbait, pctontarget)))
             doc.append(NewPage())
+        elif pdfimg.endswith('_hotspots.pdf'):
+            doc.append(NoEscape(r'\section{HOTSPOTS in NORMALS}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
+            # doc.append(NoEscape(r'\includepdf[pages={1-},scale=0.75]{Proj_06208_C_hotspots.pdf}'))
+            for i in range(2):
+                i = i+1
+                with doc.create(Figure(position='h!')) as qc_fig:
+                    qc_fig.add_image(pdfimg, width=smallscalewidth, page=i)
+                    # qc_fig.add_caption(NoEscape(r'hotspots caption'))
+                doc.append(NewPage())
         elif pdfimg.endswith('_capture_specificity_percentage.pdf'):
             doc.append(NoEscape(r'\section{Capture Specificity}'))
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
