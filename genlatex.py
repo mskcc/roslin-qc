@@ -6,6 +6,7 @@ import glob,os
 import pandas as pd
 import fnmatch
 import argparse
+import re
 
 def colorcellStatus(autostatus,colortext):
     if colortext == 'color':
@@ -19,6 +20,12 @@ def colorcellStatus(autostatus,colortext):
         return NoEscape(r'\cellcolor{green}'+cellstr)
     elif autostatus.upper() == 'WARN':
         return NoEscape(r'\cellcolor{yellow}'+cellstr)
+
+
+def count_pages(filename):
+    rxcountpages = re.compile(r"/Type\s*/Page([^s]|$)", re.MULTILINE|re.DOTALL)
+    data = file(filename,"rb").read()
+    return len(rxcountpages.findall(data))
 
 
 def find_files(directory, pattern='*'):
@@ -235,7 +242,7 @@ if __name__ == '__main__':
     doc.append(NoEscape(r'\normalsize'))
     scalewidth = NoEscape(r'.81\textwidth')
     smallscalewidth = NoEscape(r'.7\textwidth')
-    for pdfimg in glob.glob(os.path.join(pdfpath, 'Proj*.pdf')):
+    for pdfimg in glob.glob(os.path.join(pdfpath, 'Proj*')):
         if pdfimg.endswith('_alignment.pdf'):
             doc.append(NoEscape(r'\section{Cluster Density \& Alignment Rate}'))
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
@@ -268,7 +275,7 @@ if __name__ == '__main__':
             doc.append(NoEscape(r'\section{HOTSPOTS in NORMALS}'))
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
             # doc.append(NoEscape(r'\includepdf[pages={1-},scale=0.75]{Proj_06208_C_hotspots.pdf}'))
-            for i in range(2):
+            for i in range(count_pages(pdfimg)):
                 i = i+1
                 with doc.create(Figure(position='h!')) as qc_fig:
                     qc_fig.add_image(pdfimg, width=smallscalewidth, page=i)
@@ -367,14 +374,33 @@ if __name__ == '__main__':
                 qc_fig.add_image(pdfimg, width=scalewidth)
                 qc_fig.add_caption(NoEscape(r'GC Content'))
             doc.append(NewPage())
-        else:
-            # pass
-            doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
+        elif pdfimg.endswith('_cdna_contamination.txt'):
+            doc.append(NoEscape(r'\section{cDNA contamination check}'))
             doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
-            with doc.create(Figure(position='h!')) as qc_fig:
-                qc_fig.add_image(pdfimg,width=scalewidth)
-                qc_fig.add_caption('Look it\'s on its back')
+            cdnadf = pd.read_csv(pdfimg, sep='\t')
+            # cdnadf = cdnadf.replace(pd.np.nan, '', regex=True)
+            with doc.create(LongTabu("|X[c]|X[c]|X[c]|", row_height=1.5)) as data_table:
+                # with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|m{1cm}|", row_height=2.5)) as data_table:
+                    header_row1 = ["Sample","Hugo_Symbol","Count"]
+                    data_table.add_hline()
+                    data_table.add_row(header_row1, mapper=bold)
+                    data_table.add_hline()
+                    data_table.end_table_header()
+                    data_table.add_hline()
+                    data_table.end_table_last_footer()
+                    for index, row in cdnadf.iterrows():
+                        prow = row.tolist()
+                        data_table.add_row(prow[0], prow[1], prow[2])
+                        data_table.add_hline()
             doc.append(NewPage())
+        else:
+            pass
+            # doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
+            # doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
+            # with doc.create(Figure(position='h!')) as qc_fig:
+            #     qc_fig.add_image(pdfimg,width=scalewidth)
+            #     qc_fig.add_caption('Look it\'s on its back')
+            # doc.append(NewPage())
     doc.generate_pdf('test', clean_tex=False)
 
 
