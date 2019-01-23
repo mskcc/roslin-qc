@@ -9,6 +9,9 @@ if __name__ == '__main__':
     parser.add_argument('--project_prefix', required=True, help='Project name, ie Proj_000001_A')
     args = parser.parse_args()
     counter = 0
+    with open('%s_cdna_contamination.txt' % args.project_prefix,'w') as tempfile:
+        tempfile.write('No detected cDNA contamination for %s.' % args.project_prefix)
+
     for infile in args.input_mafs:
         print "current is fileo: " + infile
         df = pd.read_csv(infile, sep='\t', comment='#')
@@ -24,6 +27,6 @@ if __name__ == '__main__':
                     cdnadf = countdf.groupby(['Tumor_Sample_Barcode', 'Hugo_Symbol'])['Hugo_Symbol'].count().reset_index(name="count")
                     if counter == 0:
                         counter+=1
-                        cdnadf.to_csv('%s_cdna_contamination.txt' % args.project_prefix, index=False, sep='\t')
+                        cdnadf.to_csv('%s_cdna_contamination.txt' % args.project_prefix, mode='w', index=False, sep='\t')
                     else:
                         cdnadf.to_csv('%s_cdna_contamination.txt' % args.project_prefix, mode='a', header=False, index=False, sep='\t')
