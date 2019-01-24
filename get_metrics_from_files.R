@@ -96,6 +96,7 @@ get.hs.metrics <- function(path,type){
     file = paste(path,filename,sep="/")
     if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     hs = read.delim(file,header=T,sep="\t",check.names=FALSE)
+    hs = plyr::ddply(hs, .(SAMPLE), head, n=1)
     return(hs)
 }
 
