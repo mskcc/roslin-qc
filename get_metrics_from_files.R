@@ -96,6 +96,7 @@ get.hs.metrics <- function(path,type){
     file = paste(path,filename,sep="/")
     if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     hs = read.delim(file,header=T,sep="\t",check.names=FALSE)
+    hs = hs[!duplicated(hs[,'SAMPLE']),]
     return(hs)
 }
 
@@ -119,6 +120,7 @@ get.md.metrics <- function(path,type){
     print(file)
     if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
     dat <- read.delim(file,check.names=FALSE)
+    dat<-dat[!duplicated(dat[,'LIBRARY']),]
     dat$LIBRARY = sub("_1$", "", dat$LIBRARY)
     dat$LIBRARY = sub("[A-Z0-9]{14}_bc[0-9]+$", "", dat$LIBRARY)
     return(dat)
