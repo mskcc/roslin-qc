@@ -87,7 +87,7 @@ print.specialimage <- function(dat,metricType,sortOrder,plot.function,extras,squ
 
     if(!is.null(dat)){
         tryCatch({
-                    filename<-paste(path,"/images/",pre,"_",sortOrder,"_",metricType,".png",sep="")
+                    filename<-paste(args$output_dir,pre,"_",sortOrder,"_",metricType,".pdf",sep="")
                     plot.function(dat, extras, filename )
                  },
           error = function(e){

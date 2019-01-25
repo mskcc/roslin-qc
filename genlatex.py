@@ -44,15 +44,17 @@ def find_files(directory, pattern='*'):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--proj_prefix", required=True)
-    parser.add_argument("--summary_proj", required=True)
-    parser.add_argument("--summary_sample", required=True)
-    parser.add_argument("--pdfpath", required=True, help="Directory containing paths; typically called '/images'")
+    parser.add_argument("--full_project_name", required=True, help="project name, ie Proj_DEV_0003")
+    # parser.add_argument("--summary_proj", required=True)
+    # parser.add_argument("--summary_sample", required=True)
+    parser.add_argument("--path", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data'")
+    parser.add_argument("--pdfpath", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data/images'")
     args = parser.parse_args()
-    proj =  escape_latex(args.proj_prefix)
-    projfile = args.summary_proj
-    samplefile = args.summary_sample
     pdfpath = args.pdfpath
+    proj =  escape_latex(args.full_project_name)
+    projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
+    samplefile = os.path.join(args.path, args.full_project_name+'_SampleSummary.txt')
+
     geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm", "includeheadfoot":True}
     doc = Document(geometry_options=geometry_options)
     doc.documentclass = Command(
@@ -393,6 +395,13 @@ if __name__ == '__main__':
                         data_table.add_row(prow[0], prow[1], prow[2])
                         data_table.add_hline()
             doc.append(NewPage())
+        elif pdfimg.endswith('_concordance.pdf'):
+            doc.append(NoEscape(r'\section{Conpair Concordance}'))
+            doc.append(NoEscape(r'Go to \hyperlink{toc}{TOC}'))
+            with doc.create(Figure(position='h!')) as qc_fig:
+                qc_fig.add_image(pdfimg, width=scalewidth)
+                # qc_fig.add_caption(NoEscape(r'GC Content'))
+            doc.append(NewPage())
         else:
             pass
             # doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
@@ -401,8 +410,4 @@ if __name__ == '__main__':
             #     qc_fig.add_image(pdfimg,width=scalewidth)
             #     qc_fig.add_caption('Look it\'s on its back')
             # doc.append(NewPage())
-    doc.generate_pdf('test', clean_tex=False)
-
-
-
-#
+    doc.generate_pdf(args.full_project_name+'_QC_Report.pdf', clean_tex=False)
