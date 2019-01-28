@@ -69,7 +69,10 @@ if __name__ == '__main__':
             subsetdf.loc[subsetdf['t_depth'] < 20, 't_variant_frequency'] = 0
             subsetdf = subsetdf[shortlist]
             subsetdf['counts'] = subsetdf['t_alt_count'].astype(str) + '/' + subsetdf['t_depth'].astype(str)
-            subsetdf['total_hs_counts'] = int(total_hs_counts)
+            if len(total_hs_counts) == 0:
+                subsetdf['total_hs_counts'] = total_hs_counts
+            else:
+                subsetdf['total_hs_counts'] = int(total_hs_counts)
             if counter == 0:
                 counter+=1
                 subsetdf.to_csv('%s_HotspotsInNormals.txt' % args.project_prefix, index=False, sep='\t')
