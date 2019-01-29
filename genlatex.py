@@ -48,9 +48,9 @@ if __name__ == '__main__':
     # parser.add_argument("--summary_proj", required=True)
     # parser.add_argument("--summary_sample", required=True)
     parser.add_argument("--path", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data'")
-    parser.add_argument("--pdfpath", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data/images'")
+    # parser.add_argument("--pdfpath", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data/images'")
     args = parser.parse_args()
-    pdfpath = args.pdfpath
+    pdfpath = args.path
     proj =  escape_latex(args.full_project_name)
     projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
     samplefile = os.path.join(args.path, args.full_project_name+'_SampleSummary.txt')
