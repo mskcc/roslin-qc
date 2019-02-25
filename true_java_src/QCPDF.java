@@ -31,14 +31,14 @@ public class QCPDF {
     @Argument(alias = "piID", description = "PI's MSKCC id (email)", required = false)
     private static String piID;
 
-    @Argument(alias = "invName", description = "Full name of Investigator", required = false)
-    private static String inv;
+    //@Argument(alias = "invName", description = "Full name of Investigator", required = false)
+    //private static String inv;
 
     @Argument(alias = "invID", description = "Investigator's MSKCC id (email)", required = false)
     private static String invID;
 
-    @Argument(alias = "r", description = "Pipeline Run Number", required = false)
-    private static String runNum;
+    //@Argument(alias = "r", description = "Pipeline Run Number", required = false)
+    //private static String runNum;
 
     @Argument(alias = "a", description = "Assay", required = false)
     private static String assay;
@@ -96,15 +96,15 @@ public class QCPDF {
                         case "Investigator":
                             invID = values[1];
                             break;
-                        case "Investigator_Name":
-                            inv = values[1];
-                            break;
+                        //case "Investigator_Name":
+                        //    inv = values[1];
+                        //    break;
                         case "ProjectID":
                             project = values[1].replace("Proj_","");
                             break;
-                        case "RunNumber":
-                            runNum = values[1];
-                            break;
+                        //case "RunNumber":
+                        //    runNum = values[1];
+                        //    break;
                         case "Assay":
                             assay = values[1];
                             break;
@@ -149,9 +149,9 @@ public class QCPDF {
                     piID = piID + "@mskcc.org";
                 }
             }             
-            if (inv == null || inv.length() == 0){
-                exitWithError("Missing or invalid investigator name");
-            } 
+            //if (inv == null || inv.length() == 0){
+            //    exitWithError("Missing or invalid investigator name");
+            //}
             if (invID == null || invID.length() == 0){
                 exitWithError("Missing or invalid investigator ID");
             } else {
@@ -159,9 +159,9 @@ public class QCPDF {
                     invID = invID + "@mskcc.org";
                 }
             }
-            if (runNum == null || runNum.length() == 0){
-                exitWithError("Missing or invalid run number");
-            }
+            //if (runNum == null || runNum.length() == 0){
+            //    exitWithError("Missing or invalid run number");
+            //}
             if (assay == null || assay.length() == 0){
                 exitWithError("Missing or invalid assay");
             }
@@ -195,7 +195,7 @@ public class QCPDF {
         try{
             System.out.println("Writing PDF report for Project "+project+"..."); 
 
-            ReportPDF pdf = new ReportPDF(project,pi,piID,inv,invID,runNum,assay,pipeline,pipelineVersion,metricsDirectory,outputDirectory);
+            ReportPDF pdf = new ReportPDF(project,pi,piID,invID,assay,pipeline,pipelineVersion,metricsDirectory,outputDirectory);
             pdf.writePDF();
     
             System.out.println("Done.");

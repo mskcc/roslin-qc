@@ -78,9 +78,9 @@ public class ReportPDF {
     private String id;
     private String pi;
     private String piID;
-    private String inv;
+    //private String inv;
     private String invID;
-    private String runNum;
+    //private String runNum;
     private String assay;
     private String pipeline;
     private String pipelineVersion;
@@ -159,13 +159,13 @@ public class ReportPDF {
                                                                     
 
 
-    public ReportPDF(String id, String pi, String piID, String inv, String invID, String runNum, String assay, String pipeline, String pipelineVersion, String metricsDir, String outputDir) throws FileNotFoundException, DocumentException{
+    public ReportPDF(String id, String pi, String piID, String invID, String assay, String pipeline, String pipelineVersion, String metricsDir, String outputDir) throws FileNotFoundException, DocumentException{
         this.id = id;
         this.pi = pi;
         this.piID = piID;
-        this.inv = inv;
+        //this.inv = inv;
         this.invID = invID;
-        this.runNum = runNum;
+        //this.runNum = runNum;
         this.assay = assay;
         this.pipeline = pipeline;
         this.pipelineVersion = pipelineVersion;
@@ -460,7 +460,7 @@ public class ReportPDF {
                     captionStr = "GC Content";
                     pageDesc = "GC Content Plot";
                 } else if (fname.endsWith("_capture_specificity.pdf") || fname.endsWith("_capture_specificity_percentage.pdf")){
-                    captionStr = "Capture Specificity: Average % selected on/near bait = " + Float.toString(this.qcSummary.getAverageOnNearBaitPercentage()) + "%. Average % on bait = " + Float.toString(this.qcSummary.getAverageOnBaitPercentage())  + "%. Average % of usable bases on target = " + Float.toString(this.qcSummary.getAverageOnTargetPercentage()) + "%";
+                    captionStr = "Capture Specificity: Average % selected on/near bait = " + Float.toString(this.qcSummary.getAverageOnNearBaitPercentage()) + "%. Average % on bait = " + Float.toString(this.qcSummary.getAverageOnBaitPercentage())  + "%.";
                     if (fname.endsWith("_capture_specificity.pdf")){
                         System.out.println("\tAdding capture specificity (absolute values) plot");
                         pageDesc = "Capture Specificity (absolute) Plot";
@@ -1030,11 +1030,11 @@ public class ReportPDF {
         pipelineRunInfo.add(new Chunk("\n\n\n\n\n",header3));
         pipelineRunInfo.add(new Chunk("Assay: " + this.assay + "\n", header3));
         pipelineRunInfo.add(new Chunk(this.pipeline + " Pipeline version: " + this.pipelineVersion + "\n", header3));
-        pipelineRunInfo.add(new Chunk("Pipeline run number: " + this.runNum + "\n", header3));
+        //pipelineRunInfo.add(new Chunk("Pipeline run number: " + this.runNum + "\n", header3));
     
         pipelineRunInfo.add(new Chunk("PI: " + this.pi + "\n", header3));
         pipelineRunInfo.add(new Chunk("PI email: " + this.piID + "\n", header3));
-        pipelineRunInfo.add(new Chunk("Investigator: " + this.inv + "\n", header3));
+        //pipelineRunInfo.add(new Chunk("Investigator: " + this.inv + "\n", header3));
         pipelineRunInfo.add(new Chunk("Investigator email: " + this.invID + "\n", header3));
  
         try{
