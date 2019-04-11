@@ -15,15 +15,17 @@ if __name__ == '__main__':
     mcSampleList = list(mc.loc[mc['AvgMinorHomFreq']>=args.min_cutoff]['Sample'])
 
     fp = pd.read_csv(args.fpsummary, sep='\t')
-    bigdf = pd.DataFrame()
-    for sample in mcSampleList:
-        subsetdf = fp[(fp[sample+'_MinorAlleleFreq'] > 0.0) & (fp[sample+'_MinorAlleleFreq'] <= 0.1)][[sample+'_Genotypes', sample+'_MinorAlleleFreq',sample+'_Counts']] #added >=
-        # df['vartype'] = df['variant_id'].apply(lambda x: x[0:3])
-        subsetdf['sample'] = sample
-        # subsetdf['newcounts'] = subsetdf[sample+'_Counts'].apply(lambda x: int(x.split(' ')[0].split(':')[1]) + int(x.split(' ')[1].split(':')[1]))
-        # subsetdf = subsetdf.loc[subsetdf['newcounts'] >= 100]  # make sure each variant_id has two instances
-
-        subsetdf = subsetdf[['sample',sample+'_MinorAlleleFreq']]
-        subsetdf.columns = ['sample','value']
-        bigdf = pd.concat([bigdf,subsetdf],axis=0)
-    bigdf.to_csv(args.project_prefix+'_MinorContamFreqList.txt',index=False,sep='\t')
+    bigdf = pd.DataFrame(columns = ['sample','value'])
+    if not mcSampleList:
+        bigdf.to_csv(args.project_prefix+'_MinorContamFreqList.txt', index=False, sep='\t')
+    else:
+        for sample in mcSampleList:
+            subsetdf = fp[(fp[sample+'_MinorAlleleFreq'] > 0.0) & (fp[sample+'_MinorAlleleFreq'] <= 0.1)][[sample+'_Genotypes', sample+'_MinorAlleleFreq',sample+'_Counts']] #added >=
+            # df['vartype'] = df['variant_id'].apply(lambda x: x[0:3])
+            subsetdf['sample'] = sample
+            # subsetdf['newcounts'] = subsetdf[sample+'_Counts'].apply(lambda x: int(x.split(' ')[0].split(':')[1]) + int(x.split(' ')[1].split(':')[1]))
+            # subsetdf = subsetdf.loc[subsetdf['newcounts'] >= 100]  # make sure each variant_id has two instances
+            subsetdf = subsetdf[['sample',sample+'_MinorAlleleFreq']]
+            subsetdf.columns = ['sample','value']
+            bigdf = pd.concat([bigdf,subsetdf],axis=0)
+        bigdf.to_csv(args.project_prefix+'_MinorContamFreqList.txt',index=False,sep='\t')
