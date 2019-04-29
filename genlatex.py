@@ -410,4 +410,4 @@ if __name__ == '__main__':
             #     qc_fig.add_image(pdfimg,width=scalewidth)
             #     qc_fig.add_caption('Look it\'s on its back')
             # doc.append(NewPage())
-    doc.generate_pdf(args.full_project_name+'_QC_Report.pdf', clean_tex=False)
+    doc.generate_pdf(args.full_project_name+'_QC_Report', clean_tex=False)
