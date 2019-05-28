@@ -109,7 +109,7 @@ def makeMatrix():
                     if file.find(sample) > -1:
                         samp = sample
                 fName = file.split("/")[-1]
-                rmatch = re.search("-(R[12])-", fName)
+                rmatch = re.search("-(R[12])-\d\d\d$", fName.split('.')[0])
                 if not rmatch:
                     print >>sys.stderr, "Can't find R1/2 in filename: %s" % fName
                     sys.exit(1)
