@@ -78,7 +78,6 @@ def find_files(directory, pattern='*'):
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--full_project_name", required=True, help="project name, ie Proj_DEV_0003")
     parser.add_argument("--path", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data'")
@@ -89,8 +88,6 @@ if __name__ == '__main__':
     projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
     samplefile = os.path.join(args.path, args.full_project_name+'_SampleSummary.txt')
     requestdict = create_file_dict(args.request_file)
-    IMAGES_PATH = 'cobi'
-
     geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm"}
     doc = Document(geometry_options=geometry_options)
     doc.documentclass = Command(
@@ -128,9 +125,9 @@ if __name__ == '__main__':
     doc.append(NoEscape(r'\LARGE'))
     doc.append(NoEscape(r'\textbf{\textsf{Center for Molecular Oncology}}\\'))
     doc.append(NoEscape(r'\textbf{\textsf{Memorial Sloan Kettering Cancer Center}}\\'))
-    
 
-    
+
+
     doc.append(NoEscape(r'\vspace{5.0cm}'))
     doc.append(NoEscape(r'\LARGE'))
     doc.append(NoEscape(r'\textbf{\textsf{Project %s}}\\' % proj))
@@ -139,7 +136,7 @@ if __name__ == '__main__':
     # doc.append(NoEscape(r'\textbf{Author Name}\\'))
     # request dict
     # assaytype
-    doc.append(NoEscape(r'\textbf{\textsf{Roslin 2.4.1}}\\'))
+    doc.append(NoEscape(r'\textbf{\textsf{Roslin 2.5}}\\'))
 
     doc.append(NoEscape(r'\vspace{2.5cm}'))
 
@@ -147,28 +144,10 @@ if __name__ == '__main__':
     doc.append(NoEscape(r'\textsf{PI: %s}\\' % escape_latex(requestdict['PI'])))
     doc.append(NoEscape(r'\textsf{PI email: %s}\\' % escape_latex(requestdict['PI_E-mail'])))
 
-    # PI
-    # pi email
-    #$ROSLIN_ENVIRONMENT_VERSION
     doc.append(NoEscape(r'\vfill'))
     doc.append(NoEscape(r'\end{center}'))
     doc.append(NoEscape(r'\end{titlepage}'))
 
-
-
-    #    \vfill
- 
-    #    A thesis presented for the degree of\\
-    #    Doctor of Philosophy
- 
-    #    \vspace{0.8cm}
- 
-    #    \includegraphics[width=0.4\textwidth]{university}
- 
-    #    Department Name\\
-    #    University Name\\
-    #    Country\\
-    #    Date
 
     doc.append(NewPage())
     doc.append(NoEscape(r'\large'))
@@ -316,8 +295,10 @@ if __name__ == '__main__':
     doc.append(NewPage())
     doc.append(NoEscape(r'\normalsize'))
     #this will be tied to qc_summary.R
-    scalewidth = NoEscape(r'.91\textwidth')
+    scalewidth = NoEscape(r'.79\textwidth')
+    small_scalewidth = NoEscape(r'.6\textwidth')
     pdfgloblist = glob.glob(os.path.join(pdfpath, '*.pdf'))
+    pdfgloblist.extend(glob.glob(os.path.join(pdfpath, '*.txt')))
     # numlist = [0,12,4,14,11,3,9,2,8,1,13,10,5,6,7]
     # pdflist = [pdfgloblist[current_index] for current_index in numlist]
 
@@ -479,14 +460,15 @@ if __name__ == '__main__':
             doc.append(NoEscape(r'\section{Conpair Concordance}'))
             go_to_toc(doc)
             with doc.create(Figure(position='h!')) as qc_fig:
-                qc_fig.add_image(pdfimg, width=scalewidth)
+                qc_fig.add_image(pdfimg, width=small_scalewidth)
                 # qc_fig.add_caption(NoEscape(r'GC Content'))
             doc.append(NewPage())
         else:
-            doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
-            go_to_toc(doc)
-            with doc.create(Figure(position='h!')) as qc_fig:
-                qc_fig.add_image(pdfimg,width=scalewidth)
-                qc_fig.add_caption('Look it\'s on its back')
-            doc.append(NewPage())
-    doc.generate_pdf(args.full_project_name+'_QC_Report', clean_tex=False)#, compiler='latexmk -interaction=nonstopmode')
+            print('Other files found, but ignoring: ',pdfimg)
+            # doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
+            # go_to_toc(doc)
+            # with doc.create(Figure(position='h!')) as qc_fig:
+            #     qc_fig.add_image(pdfimg,width=scalewidth)
+            #     qc_fig.add_caption('Look it\'s on its back')
+            # doc.append(NewPage())
+    doc.generate_pdf(args.full_project_name+'_QC_Report', clean_tex=True)#, compiler='latexmk -interaction=nonstopmode')
