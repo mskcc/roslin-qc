@@ -70,7 +70,7 @@ def makeMatrix():
                        next
                     samp = fl.readline().strip().split("\t")[1].split(".fr_count")[0] 
                     if samp in allSamps:
-                        print "ERROR: sample %s found multiple times!!" %samp
+                        # print "ERROR: sample %s found multiple times!!" %samp
                         continue
                     else:
                         allSamps.append(samp)

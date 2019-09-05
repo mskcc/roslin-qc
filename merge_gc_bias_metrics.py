@@ -76,7 +76,7 @@ def makeMatrix():
 #                pat_idx = fname.index(filePattern.replace("*",""))
                 (samp, _) = fname.split(".", 1) ### WARNING: this is dumb as it assumes a certain pattern and should only be used with current naming convention of GCbias metrics files!
                 if samp in allSamps:
-                    print "ERROR: sample %s found multiple times!!" %samp
+                    # print "ERROR: sample %s found multiple times!!" %samp
                     continue
                 else:
                     allSamps.append(samp)

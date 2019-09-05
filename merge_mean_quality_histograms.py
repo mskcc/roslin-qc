@@ -91,7 +91,7 @@ def makeMatrix():
 
                 samp = os.path.basename(file).strip().split(".")[0] 
                 if samp in allSamps:
-                    print "ERROR: sample %s found multiple times!!" %samp
+                    # print "ERROR: sample %s found multiple times!!" %samp
                     continue
                 allSamps.append(samp)
 
