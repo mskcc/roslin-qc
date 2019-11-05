@@ -81,8 +81,25 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--full_project_name", required=True, help="project name, ie Proj_DEV_0003")
     parser.add_argument("--path", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data'")
-    parser.add_argument("--request_file", required=True, help="full path to request file (ie Proj_CobiTrial_2019_request.txt)")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--request_file", help="full path to request file (ie Proj_CobiTrial_2019_request.txt)")
+    group.add_argument("--assay", help="assay name")
+    parser.add_argument("--pi", help="PI name (must be used with --assay)")
+    parser.add_argument("--pi_email", help="PI email (must be used with --assay)")
     args = parser.parse_args()
+    requestdict = {}
+    if args.assay:
+        if not args.pi:
+            print("Error: value for PI is not specified")
+            exit(1)
+        if not args.pi_email:
+            print("Error: value for PI_email not specified")
+            exit(1)
+        requestdict['Assay'] = args.assay.strip()
+        requestdict['PI'] = args.pi.strip()
+        requestdict['PI_E-mail'] = args.pi_email.strip()
+    else:
+        requestdict = create_file_dict(args.request_file)
     pdfpath = args.path
     proj = escape_latex(args.full_project_name)
     projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
