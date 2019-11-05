@@ -337,7 +337,9 @@ def get_args(sysargs):
     parser.add_argument('-files', required=True, nargs='+', help="files")
     parser.add_argument('-pre',required=True,help='project prefix')
     parser.add_argument('-fp',required=True,help='fingerprint genotypes file')
-    parser.add_argument('-group',required=True,help='sample grouping file')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-group',help='sample grouping file')
+    group.add_argument('-singleSample',action='append', help='single sample and group using sample:group')
     parser.add_argument('-pair',required=True,help='sample pairing file')
     parser.add_argument('-outdir',help='output directory')
 
@@ -347,8 +349,18 @@ def get_args(sysargs):
 
 
 if __name__ == '__main__':
-    args = get_args(sys.argv) 
+    args = get_args(sys.argv)
     docFiles = args.files
-    groups = makeGroups(args.group)
+    if args.group:
+        groups = makeGroups(args.group)
+    else:
+        groups = {}
+        for single_sample in args.singleSample:
+            single_sample_split = single_sample.split(":")
+            single_sample_name = single_sample_split[0].strip()
+            single_group_name = single_sample_split[1].strip()
+            if single_sample_name not in groups:
+                groups[single_sample_name] = []
+            groups[single_sample_name].append(single_group_name)
     pairs = makePairs(args.pair)
     getContamination(docFiles,args.fp,args.pre,groups,pairs,args.outdir)
