@@ -104,7 +104,6 @@ if __name__ == '__main__':
     proj = escape_latex(args.full_project_name)
     projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
     samplefile = os.path.join(args.path, args.full_project_name+'_SampleSummary.txt')
-    requestdict = create_file_dict(args.request_file)
     geometry_options = {"tmargin": "1cm", "bmargin": "2cm", "lmargin": "1cm", "rmargin": "1cm"}
     doc = Document(geometry_options=geometry_options)
     doc.documentclass = Command(
