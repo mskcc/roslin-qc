@@ -76,12 +76,11 @@ def find_files(directory, pattern='*'):
                 matches.append(os.path.join(root, filename))
     return matches
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--full_project_name", required=True, help="project name, ie Proj_DEV_0003")
     parser.add_argument("--path", required=True, help="Directory containing paths; typically called 'consolidated_metrics_data'")
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--request_file", help="full path to request file (ie Proj_CobiTrial_2019_request.txt)")
     group.add_argument("--assay", help="assay name")
     parser.add_argument("--pi", help="PI name (must be used with --assay)")
@@ -99,7 +98,10 @@ if __name__ == '__main__':
         requestdict['PI'] = args.pi.strip()
         requestdict['PI_E-mail'] = args.pi_email.strip()
     else:
-        requestdict = create_file_dict(args.request_file)
+        try:
+            requestdict = create_file_dict(args.request_file)
+        except TypeError:
+            pass
     pdfpath = args.path
     proj = escape_latex(args.full_project_name)
     projfile = os.path.join(args.path, args.full_project_name+'_ProjectSummary.txt')
@@ -156,9 +158,9 @@ if __name__ == '__main__':
 
     doc.append(NoEscape(r'\vspace{2.5cm}'))
 
-    doc.append(NoEscape(r'\textsf{Assay: %s}\\' % escape_latex(requestdict['Assay'])))
-    doc.append(NoEscape(r'\textsf{PI: %s}\\' % escape_latex(requestdict['PI'])))
-    doc.append(NoEscape(r'\textsf{PI email: %s}\\' % escape_latex(requestdict['PI_E-mail'])))
+    # doc.append(NoEscape(r'\textsf{Assay: %s}\\' % escape_latex(requestdict['Assay'])))
+    # doc.append(NoEscape(r'\textsf{PI: %s}\\' % escape_latex(requestdict['PI'])))
+    # doc.append(NoEscape(r'\textsf{PI email: %s}\\' % escape_latex(requestdict['PI_E-mail'])))
 
     doc.append(NoEscape(r'\vfill'))
     doc.append(NoEscape(r'\end{center}'))
@@ -319,7 +321,36 @@ if __name__ == '__main__':
     # pdflist = [pdfgloblist[current_index] for current_index in numlist]
 
     # for pdfimg in pdflist:
-    for pdfimg in pdfgloblist:
+    orderlist = [
+        '_cdna_contamination.txt',
+        '_fingerprint.pdf',
+        '_homo_concordance.pdf',
+        '_nohomo_concordance.pdf',
+        args.full_project_name+'_contamination.pdf',
+        '_major_contamination.pdf',
+        '_minor_contamination.pdf',
+        '_minor_contam_freq_hist.pdf',
+        '_hotspots_in_normals.pdf',
+        '_alignment.pdf',
+        '_alignment_percentage.pdf',
+        '_capture_specificity.pdf',
+        '_capture_specificity_percentage.pdf',
+        '_insert_size.pdf',
+        '_insert_size_peaks.pdf',
+        '_duplication.pdf',
+        '_library_size.pdf',
+        '_coverage.pdf',
+        '_trimmed_reads.pdf',
+        '_base_qualities.pdf',
+        '_gc_bias.pdf',
+    ]
+    print pdfgloblist
+    for orderglob in orderlist:
+        pdfimg = [s for s in pdfgloblist if orderglob in s]
+        if len(pdfimg) == 1:
+            pdfimg = pdfimg[0]
+        else:
+            continue
         if pdfimg.endswith('_alignment.pdf'):
             doc.append(NoEscape(r'\section{Cluster Density \& Alignment Rate}'))
             go_to_toc(doc)
@@ -479,12 +510,28 @@ if __name__ == '__main__':
                 qc_fig.add_image(pdfimg, width=small_scalewidth)
                 # qc_fig.add_caption(NoEscape(r'GC Content'))
             doc.append(NewPage())
+        elif pdfimg.endswith('_contamination.pdf'):
+            doc.append(NoEscape(r'\section{Conpair Contamination}'))
+            go_to_toc(doc)
+            with doc.create(Figure(position='h!')) as qc_fig:
+                qc_fig.add_image(pdfimg, width=small_scalewidth)
+                # qc_fig.add_caption(NoEscape(r'GC Content'))
+            doc.append(NewPage())
+        elif pdfimg.endswith('hotspots_in_normals.pdf'):
+            doc.append(NoEscape(r'\section{Hotspots in Normals}'))
+            go_to_toc(doc)
+            with doc.create(Figure(position='h!')) as qc_fig:
+                qc_fig.add_image(pdfimg, width=small_scalewidth)
+                # qc_fig.add_caption(NoEscape(r'GC Content'))
+            doc.append(NewPage())
+        elif pdfimg.endswith('_minor_contam_freq_hist.pdf'):
+            doc.append(NoEscape(r'\section{Minor Contamination Bins}'))
+            go_to_toc(doc)
+            with doc.create(Figure(position='h!')) as qc_fig:
+                qc_fig.add_image(pdfimg, width=small_scalewidth)
+                # qc_fig.add_caption(NoEscape(r'GC Content'))
+            doc.append(NewPage())
         else:
-            print('Other files found, but ignoring: ',pdfimg)
-            # doc.append(NoEscape(r'\section{AWESOME FIGURE}'))
-            # go_to_toc(doc)
-            # with doc.create(Figure(position='h!')) as qc_fig:
-            #     qc_fig.add_image(pdfimg,width=scalewidth)
-            #     qc_fig.add_caption('Look it\'s on its back')
-            # doc.append(NewPage())
+            pass
+
     doc.generate_pdf(args.full_project_name+'_QC_Report', clean_tex=True)#, compiler='latexmk -interaction=nonstopmode')
