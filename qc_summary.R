@@ -116,7 +116,7 @@ bq = get.base.qualities(path,type)
 dp = get.duplication(path,type)
 ls = get.library.size(path,type)
 al = get.alignment(path,type)
-tr = get.trimmed.reads(path,type)
+# tr = get.trimmed.reads(path,type)
 cs = get.capture.specificity(path,type)
 cv = get.coverage(path,type)
 da = get.fpc.sum(path,type)
@@ -168,7 +168,7 @@ print.image(mnc,"minor_contamination","09",plot.minor.contamination,extras)
 print.image(dp,"duplication","11",plot.duplication,extras) 
 print.image(ls,"library_size","12",plot.library.size,extras) 
 print.image(cv,"coverage","13",plot.coverage,extras) 
-print.image(tr,"trimmed_reads","14",plot.trimmed.reads,extras) 
+# print.image(tr,"trimmed_reads","14",plot.trimmed.reads,extras) 
 print.image(bq,"base_qualities","15",plot.base.qualities,extras) 
 print.image(gc,"gc_bias","16",plot.gc.bias,extras) #,square=TRUE)
 # print.image(hn,"hotspots_in_normals","17",plot.hs.in.normals,extras) #,square=TRUE)
@@ -195,7 +195,7 @@ tryCatch({
     if(!is.null(is.summary)){ summary.row[which(colnames(detail)=="Insert Size Peak")] = round(is.summary) }
     if(!is.null(cs.summary)){ summary.row[which(colnames(detail)=="On Bait Bases (millions)")] = round(cs.summary$meanOnBait/1000000) }
     if(!is.null(al.summary)){ summary.row[which(colnames(detail)=="Aligned Reads (millions)")] = round((al.summary$totalClusters/nrow(detail))/1000000) }
-    summary.row[which(colnames(detail)=="Percentage Trimmed Reads")] = round(mean(as.numeric(detail[,which(colnames(detail)=="Percentage Trimmed Reads")])),digits=2) 
+    # summary.row[which(colnames(detail)=="Percentage Trimmed Reads")] = round(mean(as.numeric(detail[,which(colnames(detail)=="Percentage Trimmed Reads")])),digits=2) 
 
     detail = rbind(summary.row,detail)
     write.table(detail,file=file.path(path,paste(pre,"_SampleSummary.txt",sep="")),sep="\t",quote=F,row.names=F,col.names=T)

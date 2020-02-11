@@ -476,24 +476,24 @@ get.alignment <- function(path,type){
     return(dat)
 }
 
-get.trimmed.reads <- function(path,type){
-    reads = NULL
-    if(type == 'targeted'){
-        title = get.title(path,type)
-        hs = get.hs.metrics(path,type)
-        if(is.null(title) || is.null(hs)){ return(NULL) }
-        labels = paste(title$Barcode,title$Sample_ID,sep=": ")
-        reads <- data.frame(Samples = labels, Read1=hs$PerRead1Trimmed, Read2=hs$PerRead2Trimmed)
-    } else {
-        filename = dir(path)[grep("_CutAdaptStats.txt",dir(path))]
-        if(length(filename)==0) { return(NULL) }
-        file = paste(path,filename,sep="/")
-        if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
-        stats <- read.delim(file,check.names=FALSE)    
-        reads <- data.frame(Samples = stats$Sample, Read1=stats$R1_PercentTrimmed, Read2=stats$R2_PercentTrimmed)
-    }
-    return(reads)    
-}
+# get.trimmed.reads <- function(path,type){
+#     reads = NULL
+#     if(type == 'targeted'){
+#         title = get.title(path,type)
+#         hs = get.hs.metrics(path,type)
+#         if(is.null(title) || is.null(hs)){ return(NULL) }
+#         labels = paste(title$Barcode,title$Sample_ID,sep=": ")
+#         reads <- data.frame(Samples = labels, Read1=hs$PerRead1Trimmed, Read2=hs$PerRead2Trimmed)
+#     } else {
+#         filename = dir(path)[grep("_CutAdaptStats.txt",dir(path))]
+#         if(length(filename)==0) { return(NULL) }
+#         file = paste(path,filename,sep="/")
+#         if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
+#         stats <- read.delim(file,check.names=FALSE)    
+#         reads <- data.frame(Samples = stats$Sample, Read1=stats$R1_PercentTrimmed, Read2=stats$R2_PercentTrimmed)
+#     }
+#     return(reads)    
+# }
 
 get.pool.norm.genotype <- function(path,type){
     dat = NULL
@@ -542,6 +542,16 @@ get.cdna.contamination.summary <- function(path,type){
     }
     return(summary)
 }
+
+get.sample.names <- function(path){
+    filename = dir(path)[grep("_GcBiasMetrics.txt",dir(path))]
+    if(length(filename)==0) { return(NULL) }
+    file = paste(path,filename,sep="/")
+    if(!file.exists(file) || file.info(file)$size == 0){ return(NULL) }
+    stats <- read.delim(file,check.names=FALSE)   
+    reads <- data.frame(Samples = unique(stats$sample))
+    return(reads)
+    }
 
 get.gc.bias <- function(path,type){
     dat = NULL
@@ -596,7 +606,7 @@ get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold
              "Minor Contamination",
              "Coverage",
              "Duplication",
-             "Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak","Percentage Trimmed Reads")
+             "Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak")
 
     other = c(" ","Sample")
 
@@ -604,7 +614,7 @@ get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold
         title = get.title(path,type)
         samples = paste(title$Barcode,title$Sample_ID,sep=": ")
     } else {
-        samples = as.vector(get.trimmed.reads(path,type)$Sample)
+        samples = as.vector(get.sample.names(path)$Sample)
         
     }
 
@@ -619,7 +629,7 @@ get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold
     cov = get.coverage(path,type)
     cs = get.capture.specificity(path,type)
     is = get.is.peaks(path,type)
-    tr = get.trimmed.reads(path,type)
+    # tr = get.trimmed.reads(path,type)
     dup = get.duplication(path,type)
     lib = get.library.size(path,type)
     aln = get.alignment(path,type)
@@ -682,7 +692,7 @@ get.detail.table <- function(path,type,high_dup_threshold,low_cov_warn_threshold
     if(!is.null(cs)){ detail[match(cs$Sample, row.names(detail)),"On Bait Bases (millions)"] = round(cs[,2]/1000000) }
     if(!is.null(aln)){ detail[order(row.names(detail)),"Aligned Reads (millions)"] = round(aln[order(aln$Samples),2]/1000000) }
     if(!is.null(is)){ detail[match(is$Sample, row.names(detail)),"Insert Size Peak"] = is$Peak }  
-    if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = rowMeans(tr[,c(2,3)]) }#apply(tr[,c(2,3)],1,sum) }
+    # if(!is.null(tr)){ detail[match(tr$Sample, row.names(detail)),"Percentage Trimmed Reads"] = rowMeans(tr[,c(2,3)]) }#apply(tr[,c(2,3)],1,sum) }
 
     ## assign status to each sample based on fixed thresholds
     detail[intersect(which(as.numeric(detail[,"Duplication"])>as.numeric(high_dup_threshold)),which(detail[,1]=="2PASS")),1] = "1WARN" ## warn high duplication
