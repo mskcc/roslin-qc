@@ -266,7 +266,7 @@ if __name__ == '__main__':
     doc.append(NoEscape(r'\footnotesize'))
 
     # with doc.create(LongTabu("|X[c]|X[c]|X[p]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", row_height=1.5)) as data_table:
-    with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|m{1cm}|", row_height=2.5)) as data_table:
+    with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|", row_height=2.5)) as data_table:
         header_row1 = ["Status","Tumor Sample Barcode","Unexpected Match","Unexpected Mismatch","Major Contam.","Minor Contam.","Coverage","Duplication","Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak"]
         data_table.add_hline()
         # doc.append(NoEscape(r'\rowfont{\tiny}'))
