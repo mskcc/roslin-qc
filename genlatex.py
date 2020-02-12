@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
     # with doc.create(LongTabu("|X[c]|X[c]|X[p]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", row_height=1.5)) as data_table:
     with doc.create(LongTabu(r"|c|l|l|l|X[c]|X[c]|X[c]|X[c]|m{1cm}|>{\raggedright}m{1cm}|m{1cm}|X[c]|m{1cm}|", row_height=2.5)) as data_table:
-        header_row1 = ["Status","Tumor Sample Barcode","Unexpected Match","Unexpected Mismatch","Major Contam.","Minor Contam.","Coverage","Duplication","Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak","% Trimmed Reads"]
+        header_row1 = ["Status","Tumor Sample Barcode","Unexpected Match","Unexpected Mismatch","Major Contam.","Minor Contam.","Coverage","Duplication","Library Size (millions)","On Bait Bases (millions)","Aligned Reads (millions)","Insert Size Peak"]
         data_table.add_hline()
         # doc.append(NoEscape(r'\rowfont{\tiny}'))
         data_table.add_row(header_row1, mapper=[bold,textsf])
@@ -280,12 +280,12 @@ if __name__ == '__main__':
             if index == 0:
                 prow = row.tolist()
                 # data_table.add_row(prow)
-                data_table.add_row((MultiRow(1, data=prow[0]), prow[1], prow[2], prow[3], prow[4], prow[5], prow[6], prow[7], prow[8], prow[9], prow[10], prow[11], prow[12]), mapper=textsf)
+                data_table.add_row((MultiRow(1, data=prow[0]), prow[1], prow[2], prow[3], prow[4], prow[5], prow[6], prow[7], prow[8], prow[9], prow[10], prow[11]), mapper=textsf)
                 data_table.add_hline()
             else:
                 prow = row.tolist()
                 # data_table.add_row(prow)
-                data_table.add_row((MultiRow(1, data=colorcellStatus(prow[0], 'text')), prow[1], prow[2], prow[3], prow[4], prow[5],MultiRow(1,data=colorcellCoverage(prow[6],'text')),  prow[7], prow[8], prow[9], prow[10], prow[11], prow[12]),mapper=textsf)
+                data_table.add_row((MultiRow(1, data=colorcellStatus(prow[0], 'text')), prow[1], prow[2], prow[3], prow[4], prow[5],MultiRow(1,data=colorcellCoverage(prow[6],'text')),  prow[7], prow[8], prow[9], prow[10], prow[11]),mapper=textsf)
                 data_table.add_hline()
         # data_table.add_hline(2, 3)
         # data_table.add_row(('', 3, 4))
