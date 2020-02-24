@@ -314,7 +314,6 @@ def getContamination(docFiles,fpFile,pre,group,pairs,outdir):
 
     contamination = getDiscordantAlleleFractions(finalOut,allSamples)
     printDiscordantAlleleFractions(contamination,pre,outdir)
-    printSampleErrors(contamination,pre,groups,outdir) 
 
 def findFiles(rootDir,pattern):
     """
