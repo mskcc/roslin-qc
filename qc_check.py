@@ -103,9 +103,11 @@ def main():
 
     project_path=sys.argv[1]
 
-    homo_concordance_file  =glob.glob(project_path+'/qc/*_homo_concordance.txt')[0] #qc/..._homo_concordance.txt
-    cdna_contamination_file=glob.glob(project_path+'/qc/*_cdna_contamination.txt')[0] #qc/..._cdna_contamination.txt
-    pairing_file           =glob.glob(project_path+'/inputs/*_sample_pairing.txt')[0] #inputs/..._sample_pairing.txt
+    homo_concordance_file    =glob.glob(project_path+'/qc_metrics/consolidated_metrics/*_homo_concordance.txt')[0] #qc/..._homo_concordance.txt
+    cdna_contamination_file  =glob.glob(project_path+'/qc_metrics/consolidated_metrics/*_cdna_contamination.txt')[0] #qc/..._cdna_contamination.txt
+    pairing_file             =glob.glob(project_path+'/sample_pairing.txt')[0] #inputs/..._sample_pairing.txt
+    sample_data_clinical_file=glob.glob(project_path+'/sample_data_clinical.txt')[0] #sample_data_clinical.txt
+
 
     check_homo_concordance(homo_concordance_file,pairing_file,match_threshold)
 
