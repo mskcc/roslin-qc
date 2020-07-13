@@ -22,7 +22,8 @@ def read_pairing_file(f):
 
 def read_sample_data_clinical_file(f):
     #d={sample{Collab_ID=...,Sample_ID=...},sample2{}}
-    d={}
+    d={} #rowId -> Collab_ID
+    d2={}#patient id -> list of rowids
     with open(f) as sample_data_clinical_file:
         sample_data_clinical_file.readline() #skip headerline
         for line in sample_data_clinical_file:
@@ -33,8 +34,12 @@ def read_sample_data_clinical_file(f):
             if Sample_ID in d:
                 print 'error:Duplicate Sample_ID'
                 sys.exit(1)
-            d[Sample_ID]={'Patient_ID':Patient_ID,'Collab_ID':Collab_ID}
-    return d
+            d[Sample_ID]=Collab_ID
+            if Patient_ID not in d2:
+                d2[Patient_ID]=[]
+            d2[Patient_ID].append(Sample_ID)
+    return {'rowId':d, 'patient_id_list':d2}
+
 
 def check_homo_concordance(clinical_data_dict,homo_concordance_file,pairing_file,match_threshold):
     print 'Checking homo_concordance'
@@ -57,11 +62,16 @@ def check_homo_concordance(clinical_data_dict,homo_concordance_file,pairing_file
 
         for line in input_qc_file:
             line=line.rstrip().split()
-            row_id=line[0]                                               #s_C_LV79F0_N001_dZ
-            row_sample_id=row_id.split('_')[2]                           #LV79F0
-            values=[float(item) for item in line[1:]]
+            row_id=line[0]
+            collab_id=clinical_data_dict['rowId'][row_id]
+
             pair_id=pair_ids_d[row_id]
-            same_patient_different_ids=[item for item in col_ids if row_sample_id in item] #s_C_LV79F0_N001_dZ ['s_C_LV79F0_X002_d', 's_C_LV79F0_X001_d']
+            pair_collab_id=clinical_data_dict['rowId'][pair_id]
+
+            same_patient_different_ids=clinical_data_dict['patient_id_list']
+
+
+            values=[float(item) for item in line[1:]]
             passed_threshold=[i for i,j in enumerate(values) if j >= match_threshold]
 
             # if pair_id=='s_FROZENPOOLEDNORMAL':
@@ -69,22 +79,22 @@ def check_homo_concordance(clinical_data_dict,homo_concordance_file,pairing_file
 
             #didn't match anything, including its pair
             if len(passed_threshold)==0:
-                print row_id+' ('+clinical_data_dict[row_id]['Collab_ID']+") didn't match any genotype, including its pair "+pair_id+' ('+clinical_data_dict[pair_id]['Collab_ID']+')'
+                print row_id+' ('+collab_id+") didn't match any genotype, including its pair "+pair_id+' ('+pair_collab_id+')'
 
             matched_col_ids=[col_ids[item] for item in passed_threshold]
 
             #didn't match its pair, but matched a different sample
             if len(passed_threshold)==1 and matched_col_ids[0] != pair_id :
-                print row_id+'('+clinical_data_dict[row_id]['Collab_ID']+") didn't match its pair ("+pair_id+"), instead matched a different sample"+matched_col_ids[0]+' ('+clinical_data_dict[matched_col_ids[0]]['Collab_ID']+')'
+                print row_id+'('+collab_id+") didn't match its pair ("+pair_id+"), instead matched a different sample"+matched_col_ids[0]+' ('+clinical_data_dict['rowId'][matched_col_ids[0]]+')'
             if len(passed_threshold)==1 and matched_col_ids[0] != pair_id and matched_col_ids[0] in same_patient_different_ids :
-                print row_id,'(',clinical_data_dict[row_id]['Collab_ID']+") didn't match its pair ("+pair_id+"), instead matched a different sample from same patient"+matched_col_ids[0]+' ('+clinical_data_dict[matched_col_ids[0]]['Collab_ID']+')'
+                print row_id,'(',collab_id+") didn't match its pair ("+pair_id+"), instead matched a different sample from same patient"+matched_col_ids[0]+' ('+clinical_data_dict['rowId'][matched_col_ids[0]]+')'
 
             #matched multiple genotypes
             if len(passed_threshold)>1:
                 if pair_id not in matched_col_ids:
-                    print row_id+'(',clinical_data_dict[row_id]['Collab_ID']+") didn't match its pair, but matched other ids"+matched_col_ids
+                    print row_id+'(',clinical_data_dict['rowId'][row_id]+") didn't match its pair, but matched other ids"+matched_col_ids
                 else:
-                    print row_id+'(',clinical_data_dict[row_id]['Collab_ID']+") matched its pair, but also matched other ids"+matched_col_ids
+                    print row_id+'(',clinical_data_dict['rowId'][row_id]+") matched its pair, but also matched other ids"+matched_col_ids
 
     output=delete_tmp_file('tmp')
     if output:
@@ -105,7 +115,7 @@ def check_cdna_contamination(clinical_data_dict,cdna_contamination_file):
         d[tumor_sample_barcode].append(hugo_symbol)
 
     for item in d:
-        print item+' ('+clinical_data_dict[item]['Collab_ID']+') has cDNA contamination of genes '+','.join(d[item])
+        print item+' ('+clinical_data_dict['rowId'][item]+') has cDNA contamination of genes '+','.join(d[item])
 
 
     return 0
