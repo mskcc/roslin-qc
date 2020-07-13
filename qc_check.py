@@ -49,8 +49,8 @@ def check_homo_concordance(homo_concordance_file,pairing_file,match_threshold):
             same_patient_different_ids=[item for item in col_ids if row_sample_id in item] #s_C_LV79F0_N001_dZ ['s_C_LV79F0_X002_d', 's_C_LV79F0_X001_d']
             passed_threshold=[i for i,j in enumerate(values) if j >= match_threshold]
 
-            # if pair_id=='s_FROZENPOOLEDNORMAL':
-            #     continue
+            if 'FROZENPOOLEDNORMAL' in pair_id: #skip pooled normals
+                continue
 
             #didn't match anything, including its pair
             if len(passed_threshold)==0:
